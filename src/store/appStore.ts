@@ -47,7 +47,7 @@ interface AppState {
     deleteNotePermanently: (id: string) => Promise<void>;
 }
 
-export const useAppStore = create<AppState>((set, get) => ({
+export const useAppStore = create<AppState>((set) => ({
     // Initial state
     currentView: 'editor',
     currentDocId: null,
