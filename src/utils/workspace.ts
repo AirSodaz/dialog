@@ -63,6 +63,9 @@ let cachedCwd: string | null = null;
 let cachedSeparator: string = '/';
 let cachedWorkspacePath: string | null = null;
 let cachedContentDir: string | null = null;
+let cachedStorageDir: string | null = null;
+let cachedConfigPath: string | null = null;
+let cachedAssetsDir: string | null = null;
 
 async function ensurePathConfig(): Promise<void> {
     if (cachedCwd) return;
@@ -82,8 +85,11 @@ async function ensurePathConfig(): Promise<void> {
     // Handle potential trailing slash in cwd (though unlikely for get_cwd)
     const base = cachedCwd.endsWith(cachedSeparator) ? cachedCwd.slice(0, -1) : cachedCwd;
 
-    cachedWorkspacePath = `${base}${cachedSeparator}.dialog${cachedSeparator}workspace.json`;
-    cachedContentDir = `${base}${cachedSeparator}.dialog${cachedSeparator}content`;
+    cachedStorageDir = `${base}${cachedSeparator}.dialog`;
+    cachedWorkspacePath = `${cachedStorageDir}${cachedSeparator}workspace.json`;
+    cachedContentDir = `${cachedStorageDir}${cachedSeparator}content`;
+    cachedConfigPath = `${cachedStorageDir}${cachedSeparator}.dialog.json`;
+    cachedAssetsDir = `${cachedStorageDir}${cachedSeparator}assets`;
 }
 
 
@@ -105,6 +111,46 @@ export async function getContentPath(docId: string): Promise<string> {
         await ensurePathConfig();
     }
     return `${cachedContentDir}${cachedSeparator}${docId}.json`;
+}
+
+/**
+ * Get the storage directory path (.dialog folder)
+ */
+export async function getStorageDirPath(): Promise<string> {
+    if (!cachedStorageDir) {
+        await ensurePathConfig();
+    }
+    return cachedStorageDir!;
+}
+
+/**
+ * Get the path to the app config file (.dialog.json)
+ */
+export async function getAppConfigPath(): Promise<string> {
+    if (!cachedConfigPath) {
+        await ensurePathConfig();
+    }
+    return cachedConfigPath!;
+}
+
+/**
+ * Get the path to the assets directory
+ */
+export async function getAssetsDirPath(): Promise<string> {
+    if (!cachedAssetsDir) {
+        await ensurePathConfig();
+    }
+    return cachedAssetsDir!;
+}
+
+/**
+ * Get the full path for a specific asset file
+ */
+export async function getAssetPath(filename: string): Promise<string> {
+    if (!cachedAssetsDir) {
+        await ensurePathConfig();
+    }
+    return `${cachedAssetsDir}${cachedSeparator}${filename}`;
 }
 
 /**

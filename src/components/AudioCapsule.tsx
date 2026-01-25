@@ -1,6 +1,7 @@
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react';
 import { Play, Pause, Mic, Square } from 'lucide-react';
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { getAssetPath } from '../utils/workspace';
 
 export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -140,10 +141,8 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
                 const filename = `recording-${Date.now()}.webm`;
                 const { invoke } = await import('@tauri-apps/api/core');
 
-                // Get paths
-                const cwd = await invoke<string>('get_cwd');
-                const assetsPath = await invoke<string>('join_path', { parts: [cwd, '.dialog', 'assets'] });
-                const filePath = await invoke<string>('join_path', { parts: [assetsPath, filename] });
+                // Get paths (Optimized)
+                const filePath = await getAssetPath(filename);
 
                 console.log('[AudioCapsule] Saving audio to:', filePath);
 
