@@ -176,9 +176,11 @@ export const useAppStore = create<AppState>((set) => ({
             // --- Migration / Self-Healing Logic ---
             // Fetch all docs from IndexedDB to ensure we aren't missing anything in workspace.json
             // (e.g. from before this update or if file got out of sync)
-            const dbDocs = await getAllDocuments();
-            const dbFavorites = await getFavorites();
-            const dbTrash = await getTrash();
+            const [dbDocs, dbFavorites, dbTrash] = await Promise.all([
+                getAllDocuments(),
+                getFavorites(),
+                getTrash()
+            ]);
 
             let workspaceChanged = false;
             const newNotes = [...(workspace.notes || [])];
