@@ -21,6 +21,7 @@ import { useEffect, useState, useRef } from 'react';
 import { saveDocument, loadDocument, createDocument, getAllDocuments } from '../db/db';
 import { invoke } from '@tauri-apps/api/core';
 // import { join } from '@tauri-apps/api/path'; // Removed
+import { getContentPath } from '../utils/workspace';
 import { SyncStatus } from './SyncStatus';
 import { NodeSelection } from '@tiptap/pm/state';
 import { useAppStore } from '../store/appStore';
@@ -82,13 +83,8 @@ const Editor = () => {
                         content: content
                     });
 
-                    // Use execution directory for storage
-                    const cwd = await invoke<string>('get_cwd');
-                    console.log('[Editor] CWD:', cwd);
-
-                    const filePath = await invoke<string>('join_path', {
-                        parts: [cwd, '.dialog', 'content', `${currentDocId}.json`]
-                    });
+                    // Use execution directory for storage (Optimized)
+                    const filePath = await getContentPath(currentDocId);
                     console.log('[Editor] Target File Path:', filePath);
 
                     await invoke('write_json', {
@@ -195,10 +191,7 @@ const Editor = () => {
             } else {
                 // Fallback: Try loading from file system if Dexie is empty
                 try {
-                    const cwd = await invoke<string>('get_cwd');
-                    const filePath = await invoke<string>('join_path', {
-                        parts: [cwd, '.dialog', 'content', `${currentDocId}.json`]
-                    });
+                    const filePath = await getContentPath(currentDocId);
                     const fileContent = await invoke<string>('read_json', { path: filePath });
                     const parsed = JSON.parse(fileContent);
                     if (parsed?.content) {

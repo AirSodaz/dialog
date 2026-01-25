@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
+import { getAppConfigPath, getStorageDirPath } from './workspace';
 
 /**
  * Application configuration - stores app-level settings
@@ -50,8 +51,7 @@ let configCache: DialogConfig | null = null;
  * Get the path to the config file in the execution directory
  */
 async function getConfigPath(): Promise<string> {
-    const cwd = await invoke<string>('get_cwd');
-    return await invoke<string>('join_path', { parts: [cwd, '.dialog', '.dialog.json'] });
+    return getAppConfigPath();
 }
 
 /**
@@ -127,6 +127,5 @@ export async function setConfigValue<K extends keyof DialogConfig>(
  * Get the storage directory path (.dialog folder in execution directory)
  */
 export async function getStorageDir(): Promise<string> {
-    const cwd = await invoke<string>('get_cwd');
-    return await invoke<string>('join_path', { parts: [cwd, '.dialog'] });
+    return getStorageDirPath();
 }
