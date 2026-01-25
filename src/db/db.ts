@@ -29,6 +29,13 @@ class DialogDB extends Dexie {
         this.version(3).stores({
             documents: 'id, updatedAt, isFavorite, isDeleted' // Primary key and indices
         });
+        this.version(4).stores({
+            documents: 'id, updatedAt, isFavorite, isDeleted, [isDeleted+updatedAt]'
+        }).upgrade(tx => {
+            return tx.table('documents').toCollection().modify(doc => {
+                if (doc.isDeleted === undefined) doc.isDeleted = false;
+            });
+        });
     }
 }
 
@@ -99,9 +106,10 @@ export const loadDocument = async (id: string) => {
 // Get all active (non-deleted) documents
 export const getAllDocuments = async () => {
     return await db.documents
-        .filter(doc => !doc.isDeleted)
+        .where('[isDeleted+updatedAt]')
+        .between([false, Dexie.minKey], [false, Dexie.maxKey])
         .reverse()
-        .sortBy('updatedAt');
+        .toArray();
 };
 
 // Get favorite documents
