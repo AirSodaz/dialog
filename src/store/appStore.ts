@@ -41,6 +41,7 @@ interface AppState {
 
     // Note Actions (Sync UI + DB)
     createNote: (title?: string) => Promise<string>;
+    updateNote: (id: string, updates: { title?: string, updatedAt?: number }) => void;
     toggleFavoriteNote: (id: string) => Promise<void>;
     moveNoteToTrash: (id: string) => Promise<void>;
     restoreNoteFromTrash: (id: string) => Promise<void>;
@@ -109,6 +110,26 @@ export const useAppStore = create<AppState>((set) => ({
 
         // Also ensure recent docs logic updates if needed, although openDocument handles that usually.
         return id;
+    },
+
+    updateNote: (id, updates) => {
+        set(state => {
+            const noteIndex = state.notes.findIndex(n => n.id === id);
+            if (noteIndex === -1) return {};
+
+            const updatedNotes = [...state.notes];
+            updatedNotes[noteIndex] = {
+                ...updatedNotes[noteIndex],
+                ...updates
+            };
+
+            // Re-sort by updatedAt if it was changed
+            if (updates.updatedAt) {
+                updatedNotes.sort((a, b) => b.updatedAt - a.updatedAt);
+            }
+
+            return { notes: updatedNotes };
+        });
     },
 
     toggleFavoriteNote: async (id) => {

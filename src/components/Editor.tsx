@@ -32,7 +32,7 @@ import { AINode } from '../extensions/AINode';
 const lowlight = createLowlight(common);
 
 const Editor = () => {
-    const { currentDocId, setCurrentDoc } = useAppStore();
+    const { currentDocId, setCurrentDoc, updateNote } = useAppStore();
     const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'unsaved'>('synced');
     const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isLoadingRef = useRef(false);
@@ -63,8 +63,13 @@ const Editor = () => {
             console.log('[Editor] Content changed, triggering save. DocID:', currentDocId, 'Title:', title);
 
             // Save to Dexie (Layer 1)
+            const now = Date.now();
             saveDocument(currentDocId, content, title)
-                .then(() => console.log('[Editor] Saved to IndexedDB (Dexie)'))
+                .then(() => {
+                    console.log('[Editor] Saved to IndexedDB (Dexie)');
+                    // Update the store to keep UI in sync
+                    updateNote(currentDocId, { title, updatedAt: now });
+                })
                 .catch(err => console.error('[Editor] Failed to save to Dexie:', err));
 
             setSyncStatus('unsaved');

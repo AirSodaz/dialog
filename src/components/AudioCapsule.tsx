@@ -9,6 +9,7 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
     const [duration, setDuration] = useState(0);
     const [isRecording, setIsRecording] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
+    const [micError, setMicError] = useState<string | null>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
@@ -111,6 +112,7 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
 
     const startRecording = async () => {
         try {
+            setMicError(null); // Clear previous error
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const mediaRecorder = new MediaRecorder(stream);
             mediaRecorderRef.current = mediaRecorder;
@@ -174,8 +176,18 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
             recordingTimerRef.current = setInterval(() => {
                 setRecordingTime(prev => prev + 1);
             }, 1000);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to start recording:', err);
+            // Show user-friendly error message
+            if (err.name === 'NotFoundError') {
+                setMicError('未找到麦克风设备，请连接麦克风后重试');
+            } else if (err.name === 'NotReadableError') {
+                setMicError('麦克风被占用，请关闭其他使用麦克风的应用');
+            } else if (err.name === 'NotAllowedError') {
+                setMicError('麦克风权限被拒绝，请在系统设置中允许访问');
+            } else {
+                setMicError('无法访问麦克风: ' + err.message);
+            }
         }
     };
 
@@ -212,7 +224,7 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
     // Recording Mode UI
     if (!hasRecording) {
         return (
-            <NodeViewWrapper className="my-4">
+            <NodeViewWrapper className="my-4" contentEditable={false} data-drag-handle>
                 <div className="inline-flex items-center gap-3 p-3 pr-5 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 shadow-sm">
                     {isRecording ? (
                         <>
@@ -256,16 +268,23 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
                                 <Mic className="w-4 h-4" />
                             </button>
 
-                            {/* Placeholder waveform */}
-                            <div className="flex items-center gap-0.5 h-8" style={{ minWidth: '160px' }}>
-                                {Array.from({ length: 32 }).map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className="w-1 rounded-full bg-stone-300 dark:bg-stone-600"
-                                        style={{ height: '30%' }}
-                                    />
-                                ))}
-                            </div>
+                            {micError ? (
+                                /* Error message */
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs text-red-500 max-w-[160px]">{micError}</span>
+                                </div>
+                            ) : (
+                                /* Placeholder waveform */
+                                <div className="flex items-center gap-0.5 h-8" style={{ minWidth: '160px' }}>
+                                    {Array.from({ length: 32 }).map((_, i) => (
+                                        <div
+                                            key={i}
+                                            className="w-1 rounded-full bg-stone-300 dark:bg-stone-600"
+                                            style={{ height: '30%' }}
+                                        />
+                                    ))}
+                                </div>
+                            )}
                         </>
                     )}
                 </div>
@@ -275,7 +294,7 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
 
     // Playback Mode UI
     return (
-        <NodeViewWrapper className="my-4">
+        <NodeViewWrapper className="my-4" contentEditable={false} data-drag-handle>
             <div className="inline-flex items-center gap-3 p-3 pr-5 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 shadow-sm hover:shadow-md transition-shadow group">
                 {/* Hidden audio element */}
                 <audio ref={audioRef} src={audioSrc || undefined} preload="metadata" />
