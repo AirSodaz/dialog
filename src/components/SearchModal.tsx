@@ -1,11 +1,16 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Document, searchDocuments, getAllDocuments } from '../db/db';
 import { useAppStore } from '../store/appStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Search, FileText, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export default function SearchModal() {
-    const { searchOpen, closeSearch, openDocument } = useAppStore();
+    const { searchOpen, closeSearch, openDocument } = useAppStore(useShallow((state) => ({
+        searchOpen: state.searchOpen,
+        closeSearch: state.closeSearch,
+        openDocument: state.openDocument,
+    })));
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<Document[]>([]);
     const [selectedIndex, setSelectedIndex] = useState(0);

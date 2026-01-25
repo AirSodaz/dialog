@@ -5,11 +5,15 @@ import DocumentList from "./components/DocumentList";
 import SearchModal from "./components/SearchModal";
 import SettingsModal from "./components/SettingsModal";
 import { useAppStore } from "./store/appStore";
+import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
 import { getConfigValue } from "./utils/config";
 
 function App() {
-  const { currentView, loadFromWorkspace } = useAppStore();
+  const { currentView, loadFromWorkspace } = useAppStore(useShallow((state) => ({
+    currentView: state.currentView,
+    loadFromWorkspace: state.loadFromWorkspace,
+  })));
 
   // Load theme from config on startup
   useEffect(() => {
