@@ -186,13 +186,15 @@ export const useAppStore = create<AppState>((set) => ({
             const newTrash = [...(workspace.trash || [])];
 
             // 1. Sync Notes
+            const existingNoteIds = new Set(newNotes.map(n => n.id));
             for (const doc of dbDocs) {
-                if (!newNotes.find(n => n.id === doc.id)) {
+                if (!existingNoteIds.has(doc.id)) {
                     newNotes.push({
                         id: doc.id,
                         title: doc.title,
                         updatedAt: doc.updatedAt
                     });
+                    existingNoteIds.add(doc.id);
                     workspaceChanged = true;
                 }
             }
@@ -200,22 +202,26 @@ export const useAppStore = create<AppState>((set) => ({
             newNotes.sort((a, b) => b.updatedAt - a.updatedAt);
 
             // 2. Sync Favorites
+            const existingFavIds = new Set(newFavorites);
             for (const doc of dbFavorites) {
-                if (!newFavorites.includes(doc.id)) {
+                if (!existingFavIds.has(doc.id)) {
                     newFavorites.push(doc.id);
+                    existingFavIds.add(doc.id);
                     workspaceChanged = true;
                 }
             }
 
             // 3. Sync Trash
+            const existingTrashIds = new Set(newTrash.map(t => t.id));
             for (const doc of dbTrash) {
-                if (!newTrash.find(t => t.id === doc.id)) {
+                if (!existingTrashIds.has(doc.id)) {
                     newTrash.push({
                         id: doc.id,
                         title: doc.title,
                         // Trash usually has deletedAt, but if missing use updatedAt or now
                         deletedAt: doc.deletedAt || Date.now()
                     });
+                    existingTrashIds.add(doc.id);
                     workspaceChanged = true;
                 }
             }
