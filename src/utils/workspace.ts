@@ -58,20 +58,53 @@ const DEFAULT_WORKSPACE: WorkspaceConfig = {
 
 let workspaceCache: WorkspaceConfig | null = null;
 
+// Cache for path resolution to avoid redundant IPC calls
+let cachedCwd: string | null = null;
+let cachedSeparator: string = '/';
+let cachedWorkspacePath: string | null = null;
+let cachedContentDir: string | null = null;
+
+async function ensurePathConfig(): Promise<void> {
+    if (cachedCwd) return;
+
+    cachedCwd = await invoke<string>('get_cwd');
+
+    // Heuristic: detect separator from cwd
+    // If we see backslashes, we assume Windows. Otherwise Unix-like.
+    // This is a safe assumption for almost all environments Tauri runs in.
+    if (cachedCwd.includes('\\')) {
+        cachedSeparator = '\\';
+    } else {
+        cachedSeparator = '/';
+    }
+
+    // Pre-calculate paths
+    // Handle potential trailing slash in cwd (though unlikely for get_cwd)
+    const base = cachedCwd.endsWith(cachedSeparator) ? cachedCwd.slice(0, -1) : cachedCwd;
+
+    cachedWorkspacePath = `${base}${cachedSeparator}.dialog${cachedSeparator}workspace.json`;
+    cachedContentDir = `${base}${cachedSeparator}.dialog${cachedSeparator}content`;
+}
+
+
 /**
  * Get the path to the workspace file
  */
-async function getWorkspacePath(): Promise<string> {
-    const cwd = await invoke<string>('get_cwd');
-    return await invoke<string>('join_path', { parts: [cwd, '.dialog', 'workspace.json'] });
+export async function getWorkspacePath(): Promise<string> {
+    if (!cachedWorkspacePath) {
+        await ensurePathConfig();
+    }
+    return cachedWorkspacePath!;
 }
 
 /**
  * Get the path to a content file
  */
 export async function getContentPath(docId: string): Promise<string> {
-    const cwd = await invoke<string>('get_cwd');
-    return await invoke<string>('join_path', { parts: [cwd, '.dialog', 'content', `${docId}.json`] });
+    if (!cachedContentDir) {
+        await ensurePathConfig();
+    }
+    return `${cachedContentDir}${cachedSeparator}${docId}.json`;
 }
 
 /**
@@ -162,6 +195,10 @@ export async function updateSidebarState(sidebar: Partial<WorkspaceConfig['sideb
  */
 export function clearWorkspaceCache(): void {
     workspaceCache = null;
+    // Clear path caches as well
+    cachedCwd = null;
+    cachedWorkspacePath = null;
+    cachedContentDir = null;
 }
 
 // --- Note Management Helpers ---
