@@ -133,19 +133,22 @@ export default function DocumentList({ viewType }: DocumentListProps) {
         deleteNotePermanently: state.deleteNotePermanently
     })));
 
+    // Optimize lookups by converting favorites array to a Set
+    const favoritesSet = useMemo(() => new Set(favorites), [favorites]);
+
     // Derive documents from store data based on view type
     const documents = useMemo(() => {
         switch (viewType) {
             case 'all-notes':
                 return notes;
             case 'favorites':
-                return notes.filter(n => favorites.includes(n.id));
+                return notes.filter(n => favoritesSet.has(n.id));
             case 'trash':
                 return trash;
             default:
                 return [];
         }
-    }, [viewType, notes, favorites, trash]);
+    }, [viewType, notes, favoritesSet, trash]);
 
     const handleToggleFavorite = useCallback(async (e: React.MouseEvent, id: string) => {
         e.stopPropagation();
@@ -195,7 +198,7 @@ export default function DocumentList({ viewType }: DocumentListProps) {
                 <div className="space-y-2">
                     {documents.map((doc) => {
                         const timestamp = 'updatedAt' in doc ? doc.updatedAt : (doc as any).deletedAt;
-                        const isFav = favorites.includes(doc.id);
+                        const isFav = favoritesSet.has(doc.id);
 
                         return (
                             <DocumentListItem
