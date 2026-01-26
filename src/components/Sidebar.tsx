@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, FocusEvent } from "react";
 import { cn } from "../lib/utils";
 import {
     FileText,
@@ -100,6 +100,13 @@ export default function Sidebar() {
         setView(view);
     };
 
+    const handleFocusLeave = (e: FocusEvent) => {
+        // Only close if focus is moving outside the sidebar
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+            handleMouseLeave();
+        }
+    };
+
     return (
         <>
             <div
@@ -117,6 +124,8 @@ export default function Sidebar() {
                 )}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
+                onFocus={handleMouseEnter}
+                onBlur={handleFocusLeave}
             >
 
                 {/* Quick Actions */}
@@ -200,10 +209,11 @@ interface SidebarItemProps {
 
 function SidebarItem({ icon: Icon, label, shortcut, active, onClick }: SidebarItemProps) {
     return (
-        <div
+        <button
+            type="button"
             onClick={onClick}
             className={cn(
-                "flex items-center justify-between px-3 py-1.5 rounded-md cursor-pointer text-stone-600 dark:text-stone-300 group transition-colors",
+                "w-full text-left flex items-center justify-between px-3 py-1.5 rounded-md cursor-pointer text-stone-600 dark:text-stone-300 group transition-colors",
                 active
                     ? "bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100"
                     : "hover:bg-black/5 dark:hover:bg-white/5"
@@ -221,7 +231,7 @@ function SidebarItem({ icon: Icon, label, shortcut, active, onClick }: SidebarIt
             {shortcut && (
                 <span className="text-[10px] text-stone-400 dark:text-stone-600 font-medium">{shortcut}</span>
             )}
-        </div>
+        </button>
     )
 }
 
