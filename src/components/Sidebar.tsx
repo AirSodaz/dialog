@@ -36,8 +36,6 @@ export default function Sidebar() {
         openDocument,
         openSearch,
         openSettings,
-        recentDocs,
-        notes,
         createNote
     } = useAppStore(useShallow((state) => ({
         currentView: state.currentView,
@@ -46,16 +44,17 @@ export default function Sidebar() {
         openDocument: state.openDocument,
         openSearch: state.openSearch,
         openSettings: state.openSettings,
-        recentDocs: state.recentDocs,
-        notes: state.notes,
         createNote: state.createNote,
     })));
 
-    // Derive recent pages from store data
-    const recentPages = recentDocs
-        .map(id => notes.find(n => n.id === id))
-        .filter((n): n is { id: string, title: string, updatedAt: number } => !!n)
-        .slice(0, 5);
+    // Derive recent pages from store data with memoized selector to prevent unnecessary re-renders
+    // when unrelated notes are updated (e.g. during typing)
+    const recentPages = useAppStore(useShallow((state) =>
+        state.recentDocs
+            .map(id => state.notes.find(n => n.id === id))
+            .filter((n): n is { id: string, title: string, updatedAt: number } => !!n)
+            .slice(0, 5)
+    ));
 
     const handleMouseEnter = () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
