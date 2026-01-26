@@ -48,17 +48,17 @@ const DocumentListItem = React.memo(({
             onClick={() => onOpen(id)}
             className={cn(
                 "group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all",
-                "hover:bg-stone-100 dark:hover:bg-stone-800",
-                isSelected && "bg-stone-100 dark:bg-stone-800"
+                "hover:bg-surface-hover",
+                isSelected && "bg-surface-hover"
             )}
         >
             <div className="flex items-center gap-3 min-w-0">
-                <FileText className="w-5 h-5 text-stone-400 shrink-0" />
+                <FileText className="w-5 h-5 text-subtle shrink-0" />
                 <div className="min-w-0">
-                    <div className="text-sm font-medium text-stone-800 dark:text-stone-200 truncate">
+                    <div className="text-sm font-medium text-ink truncate">
                         {title || 'Untitled'}
                     </div>
-                    <div className="text-xs text-stone-500 dark:text-stone-400">
+                    <div className="text-xs text-muted">
                         {formatDate(updatedAt)}
                     </div>
                 </div>
@@ -69,7 +69,7 @@ const DocumentListItem = React.memo(({
                     <>
                         <button
                             onClick={(e) => onRestore(e, id)}
-                            className="p-1.5 rounded hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-400"
+                            className="p-1.5 rounded hover:bg-border-base text-muted"
                             title="Restore"
                         >
                             <RotateCcw className="w-4 h-4" />
@@ -87,10 +87,10 @@ const DocumentListItem = React.memo(({
                         <button
                             onClick={(e) => onToggleFavorite(e, id)}
                             className={cn(
-                                "p-1.5 rounded hover:bg-stone-200 dark:hover:bg-stone-700",
+                                "p-1.5 rounded hover:bg-border-base",
                                 isFavorite
                                     ? "text-amber-500"
-                                    : "text-stone-400"
+                                    : "text-subtle"
                             )}
                             title={isFavorite ? "Remove from favorites" : "Add to favorites"}
                         >
@@ -98,7 +98,7 @@ const DocumentListItem = React.memo(({
                         </button>
                         <button
                             onClick={(e) => onMoveToTrash(e, id)}
-                            className="p-1.5 rounded hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-400 hover:text-red-500"
+                            className="p-1.5 rounded hover:bg-border-base text-subtle hover:text-red-500"
                             title="Move to trash"
                         >
                             <Trash2 className="w-4 h-4" />
@@ -182,12 +182,12 @@ export default function DocumentList({ viewType }: DocumentListProps) {
 
     return (
         <div className="max-w-4xl mx-auto w-full py-12 px-12">
-            <h1 className="text-2xl font-serif font-semibold text-stone-800 dark:text-stone-200 mb-6">
+            <h1 className="text-2xl font-serif font-semibold text-ink mb-6">
                 {getTitle()}
             </h1>
 
             {documents.length === 0 ? (
-                <div className="text-stone-500 dark:text-stone-400 py-8 text-center">
+                <div className="text-muted py-8 text-center">
                     {viewType === 'trash'
                         ? 'Trash is empty'
                         : viewType === 'favorites'

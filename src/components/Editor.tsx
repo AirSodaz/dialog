@@ -249,13 +249,13 @@ const Editor = () => {
                         const isNodeSelection = state.selection instanceof NodeSelection;
                         return !empty && !isNodeSelection;
                     }}
-                    className="bg-white dark:bg-stone-800 border border-stone-200 dark:border-700 px-1 py-1 rounded-lg shadow-lg flex gap-0.5"
+                    className="bg-modal border border-border-base px-1 py-1 rounded-lg shadow-lg flex gap-0.5"
                 >
                     <button
                         onClick={() => editor.chain().focus().toggleBold().run()}
                         className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${editor.isActive('bold')
-                            ? 'bg-stone-100 dark:bg-stone-700 text-stone-900 dark:text-stone-100'
-                            : 'text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-700/50'
+                            ? 'bg-surface-hover text-ink'
+                            : 'text-muted hover:bg-surface-hover'
                             }`}
                     >
                         <span className="font-bold text-sm">B</span>
@@ -263,13 +263,13 @@ const Editor = () => {
                     <button
                         onClick={() => editor.chain().focus().toggleItalic().run()}
                         className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${editor.isActive('italic')
-                            ? 'bg-stone-100 dark:bg-stone-700 text-stone-900 dark:text-stone-100'
-                            : 'text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-700/50'
+                            ? 'bg-surface-hover text-ink'
+                            : 'text-muted hover:bg-surface-hover'
                             }`}
                     >
                         <span className="italic text-sm">I</span>
                     </button>
-                    <div className="w-px h-4 bg-stone-200 dark:bg-stone-700 my-auto mx-1" />
+                    <div className="w-px h-4 bg-border-base my-auto mx-1" />
                     <button
                         onClick={() => {
                             // Insert AINode at selection
@@ -290,7 +290,7 @@ const Editor = () => {
                                 })
                                 .run();
                         }}
-                        className="w-8 h-8 rounded flex items-center justify-center transition-colors text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-700/50"
+                        className="w-8 h-8 rounded flex items-center justify-center transition-colors text-muted hover:bg-surface-hover"
                     >
                         <Sparkles className="w-4 h-4" />
                     </button>
