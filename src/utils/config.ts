@@ -79,12 +79,18 @@ export async function loadConfig(): Promise<DialogConfig> {
         const parsed = JSON.parse(content);
         configCache = { ...DEFAULT_CONFIG, ...parsed };
         return configCache!;
-    } catch {
-        // Config file doesn't exist yet, return defaults AND create the file/folder
-        console.log('[Config] Config not found, creating default...');
+    } catch (error) {
+        console.log('[Config] Config not found or failed to load, using defaults:', error);
         configCache = { ...DEFAULT_CONFIG };
-        // Use internal helper to avoid recursion
-        await writeConfigToFile(configCache!);
+
+        try {
+            // Try to create/save the default file
+            // Use internal helper to avoid recursion
+            await writeConfigToFile(configCache!);
+        } catch (writeError) {
+            console.warn('[Config] Failed to persist default config (using in-memory):', writeError);
+        }
+
         return configCache!;
     }
 }

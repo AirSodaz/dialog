@@ -37,16 +37,20 @@ export default function SettingsModal() {
     useEffect(() => {
         // Load settings on open
         const loadSettings = async () => {
-            const theme = await getConfigValue('theme');
-            const isDarkMode = theme === 'dark' || document.documentElement.classList.contains('dark');
-            setIsDark(isDarkMode);
+            try {
+                const theme = await getConfigValue('theme');
+                const isDarkMode = theme === 'dark' || document.documentElement.classList.contains('dark');
+                setIsDark(isDarkMode);
 
-            const dir = await getStorageDir();
-            setStoragePath(dir);
+                const dir = await getStorageDir();
+                setStoragePath(dir);
 
-            const ai = await getConfigValue('ai');
-            if (ai) {
-                setAiConfig(ai);
+                const ai = await getConfigValue('ai');
+                if (ai) {
+                    setAiConfig(ai);
+                }
+            } catch (error) {
+                console.error('Failed to load settings:', error);
             }
         };
 
@@ -55,17 +59,22 @@ export default function SettingsModal() {
         }
     }, [settingsOpen]);
 
-    const toggleTheme = async () => {
+    const toggleTheme = () => {
         const html = document.documentElement;
-        if (isDark) {
-            html.classList.remove('dark');
-            await setConfigValue('theme', 'light');
-            setIsDark(false);
-        } else {
+        const newIsDark = !isDark;
+
+        // Optimistic update
+        setIsDark(newIsDark);
+        if (newIsDark) {
             html.classList.add('dark');
-            await setConfigValue('theme', 'dark');
-            setIsDark(true);
+        } else {
+            html.classList.remove('dark');
         }
+
+        // Persist
+        setConfigValue('theme', newIsDark ? 'dark' : 'light').catch(err => {
+            console.error('Failed to save theme preference:', err);
+        });
     };
 
     const updateAiConfig = async (key: keyof DialogConfig['ai'], value: string) => {
@@ -178,6 +187,7 @@ export default function SettingsModal() {
                                         </div>
                                     </div>
                                     <button
+                                        data-testid="theme-toggle"
                                         onClick={toggleTheme}
                                         className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface text-ink hover:bg-surface-hover transition-colors"
                                     >
