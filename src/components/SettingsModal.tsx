@@ -1,4 +1,5 @@
 import { useAppStore } from '../store/appStore';
+import { useShallow } from 'zustand/react/shallow';
 import { X, Moon, Sun, Folder, Sparkles, Settings as SettingsIcon, Key, Server, Hash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getConfigValue, setConfigValue, getStorageDir, DialogConfig } from '../utils/config';
@@ -15,7 +16,10 @@ const PROVIDERS = [
 ] as const;
 
 export default function SettingsModal() {
-    const { settingsOpen, closeSettings } = useAppStore();
+    const { settingsOpen, closeSettings } = useAppStore(useShallow((state) => ({
+        settingsOpen: state.settingsOpen,
+        closeSettings: state.closeSettings,
+    })));
     const [activeTab, setActiveTab] = useState<SettingsTab>('general');
 
     // General Settings State

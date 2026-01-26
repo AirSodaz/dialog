@@ -9,6 +9,7 @@ import {
     Search
 } from "lucide-react";
 import { useAppStore, ViewType } from "../store/appStore";
+import { useShallow } from "zustand/react/shallow";
 import { loadDocument } from "../db/db";
 
 // Helper function to check if Tiptap content is empty
@@ -38,7 +39,17 @@ export default function Sidebar() {
         recentDocs,
         notes,
         createNote
-    } = useAppStore();
+    } = useAppStore(useShallow((state) => ({
+        currentView: state.currentView,
+        currentDocId: state.currentDocId,
+        setView: state.setView,
+        openDocument: state.openDocument,
+        openSearch: state.openSearch,
+        openSettings: state.openSettings,
+        recentDocs: state.recentDocs,
+        notes: state.notes,
+        createNote: state.createNote,
+    })));
 
     // Derive recent pages from store data
     const recentPages = recentDocs

@@ -25,6 +25,7 @@ import { getContentPath } from '../utils/workspace';
 import { SyncStatus } from './SyncStatus';
 import { NodeSelection } from '@tiptap/pm/state';
 import { useAppStore } from '../store/appStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Sparkles } from 'lucide-react';
 
 import { AINode } from '../extensions/AINode';
@@ -32,7 +33,11 @@ import { AINode } from '../extensions/AINode';
 const lowlight = createLowlight(common);
 
 const Editor = () => {
-    const { currentDocId, setCurrentDoc, updateNote } = useAppStore();
+    const { currentDocId, setCurrentDoc, updateNote } = useAppStore(useShallow((state) => ({
+        currentDocId: state.currentDocId,
+        setCurrentDoc: state.setCurrentDoc,
+        updateNote: state.updateNote,
+    })));
     const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'unsaved'>('synced');
     const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isLoadingRef = useRef(false);
