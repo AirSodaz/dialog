@@ -86,12 +86,12 @@ export default function SearchModal() {
             onClick={closeSearch}
         >
             <div
-                className="w-full max-w-xl bg-white dark:bg-stone-900 rounded-xl shadow-2xl border border-stone-200 dark:border-stone-700 overflow-hidden"
+                className="w-full max-w-xl bg-modal rounded-xl shadow-2xl border border-border-base overflow-hidden"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Search Input */}
-                <div className="flex items-center gap-3 px-4 py-3 border-b border-stone-200 dark:border-stone-700">
-                    <Search className="w-5 h-5 text-stone-400" />
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-border-base">
+                    <Search className="w-5 h-5 text-subtle" />
                     <input
                         ref={inputRef}
                         type="text"
@@ -99,11 +99,11 @@ export default function SearchModal() {
                         onChange={(e) => setQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="Search notes..."
-                        className="flex-1 bg-transparent text-stone-800 dark:text-stone-200 placeholder-stone-400 outline-none text-base"
+                        className="flex-1 bg-transparent text-ink placeholder-subtle outline-none text-base"
                     />
                     <button
                         onClick={closeSearch}
-                        className="p-1 rounded hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-400"
+                        className="p-1 rounded hover:bg-surface-hover text-subtle"
                     >
                         <X className="w-4 h-4" />
                     </button>
@@ -112,7 +112,7 @@ export default function SearchModal() {
                 {/* Results */}
                 <div className="max-h-80 overflow-y-auto">
                     {results.length === 0 ? (
-                        <div className="px-4 py-8 text-center text-stone-500 dark:text-stone-400">
+                        <div className="px-4 py-8 text-center text-muted">
                             {query ? 'No notes found' : 'No notes yet'}
                         </div>
                     ) : (
@@ -124,12 +124,12 @@ export default function SearchModal() {
                                     className={cn(
                                         "flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors",
                                         index === selectedIndex
-                                            ? "bg-stone-100 dark:bg-stone-800"
-                                            : "hover:bg-stone-50 dark:hover:bg-stone-800/50"
+                                            ? "bg-surface-hover"
+                                            : "hover:bg-surface-hover"
                                     )}
                                 >
-                                    <FileText className="w-4 h-4 text-stone-400 shrink-0" />
-                                    <span className="text-sm text-stone-800 dark:text-stone-200 truncate">
+                                    <FileText className="w-4 h-4 text-subtle shrink-0" />
+                                    <span className="text-sm text-ink truncate">
                                         {doc.title || 'Untitled'}
                                     </span>
                                 </div>
@@ -139,7 +139,7 @@ export default function SearchModal() {
                 </div>
 
                 {/* Footer hint */}
-                <div className="px-4 py-2 border-t border-stone-200 dark:border-stone-700 text-xs text-stone-400 flex items-center gap-4">
+                <div className="px-4 py-2 border-t border-border-base text-xs text-subtle flex items-center gap-4">
                     <span>↑↓ to navigate</span>
                     <span>↵ to open</span>
                     <span>esc to close</span>

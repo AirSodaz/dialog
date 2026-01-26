@@ -116,7 +116,7 @@ export default function Sidebar() {
 
             <aside
                 className={cn(
-                    "fixed top-0 left-0 bottom-0 z-40 w-[280px] bg-sidebar dark:bg-[#202020] border-r border-[#E0E0E0] dark:border-[#333]",
+                    "fixed top-0 left-0 bottom-0 z-40 w-[280px] bg-sidebar border-r border-border-base",
                     "shadow-[4px_0_24px_rgba(0,0,0,0.02)]",
                     "transition-all duration-300 ease-in-out transform",
                     isOpen ? "translate-x-0 opacity-100" : "-translate-x-full opacity-90",
@@ -132,9 +132,9 @@ export default function Sidebar() {
                 <div className="mb-4 px-2">
                     <button
                         onClick={handleNewPage}
-                        className="w-full flex items-center gap-2 px-2 py-1.5 bg-white dark:bg-[#2C2C2C] hover:bg-stone-50 dark:hover:bg-[#353535] border border-stone-200 dark:border-[#333] shadow-sm rounded-md text-stone-600 dark:text-stone-300 transition-all group"
+                        className="w-full flex items-center gap-2 px-2 py-1.5 bg-paper hover:bg-surface-hover border border-border-base shadow-sm rounded-md text-muted transition-all group"
                     >
-                        <Plus className="w-4 h-4 text-stone-400 group-hover:text-stone-600 dark:text-stone-500 dark:group-hover:text-stone-300" />
+                        <Plus className="w-4 h-4 text-subtle group-hover:text-muted" />
                         <span className="text-sm font-medium">New Page</span>
                     </button>
                 </div>
@@ -169,7 +169,7 @@ export default function Sidebar() {
                     {/* Recent Pages */}
                     {recentPages.length > 0 && (
                         <div className="pt-4 pb-2">
-                            <div className="px-3 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-1">
+                            <div className="px-3 text-xs font-semibold text-subtle uppercase tracking-wider mb-1">
                                 Recent
                             </div>
                             {recentPages.map((doc) => (
@@ -186,7 +186,7 @@ export default function Sidebar() {
                 </nav>
 
                 {/* Footer */}
-                <div className="mt-auto px-1 pt-2 border-t border-black/5 dark:border-white/5">
+                <div className="mt-auto px-1 pt-2 border-t border-border-base">
                     <SidebarItem
                         icon={Settings}
                         label="Settings"
@@ -213,23 +213,23 @@ function SidebarItem({ icon: Icon, label, shortcut, active, onClick }: SidebarIt
             type="button"
             onClick={onClick}
             className={cn(
-                "w-full text-left flex items-center justify-between px-3 py-1.5 rounded-md cursor-pointer text-stone-600 dark:text-stone-300 group transition-colors",
+                "w-full text-left flex items-center justify-between px-3 py-1.5 rounded-md cursor-pointer text-muted group transition-colors",
                 active
-                    ? "bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100"
-                    : "hover:bg-black/5 dark:hover:bg-white/5"
+                    ? "bg-surface-hover text-ink"
+                    : "hover:bg-surface-hover"
             )}
         >
             <div className="flex items-center gap-2.5">
                 <Icon className={cn(
                     "w-4 h-4",
                     active
-                        ? "text-stone-700 dark:text-stone-200"
-                        : "text-stone-500 dark:text-stone-400 group-hover:text-stone-800 dark:group-hover:text-stone-200"
+                        ? "text-ink"
+                        : "text-subtle group-hover:text-muted"
                 )} />
                 <span className="text-[13px] font-medium">{label}</span>
             </div>
             {shortcut && (
-                <span className="text-[10px] text-stone-400 dark:text-stone-600 font-medium">{shortcut}</span>
+                <span className="text-[10px] text-subtle font-medium">{shortcut}</span>
             )}
         </button>
     )

@@ -4,18 +4,59 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --color-paper: #FDFBF7;
-  --color-sidebar: #F7F5F0;
-  --color-ink: #2D2A26;
-  /* Note: Tailwind v4 automatically maps these to utilities like bg-paper, text-ink */
-
   --font-serif: "Merriweather", "Spectral", serif;
   --font-sans: "Inter", "Geist", sans-serif;
+
+  /* Semantic Color Mapping */
+  --color-paper: var(--bg-paper);
+  --color-sidebar: var(--bg-sidebar);
+  --color-modal: var(--bg-modal);
+  --color-surface: var(--bg-surface);
+  --color-surface-hover: var(--bg-surface-hover);
+
+  --color-ink: var(--fg-ink);
+  --color-muted: var(--fg-muted);
+  --color-subtle: var(--fg-subtle);
+
+  --color-border-base: var(--border-base);
+  --color-border-focus: var(--border-focus);
 }
 
 @layer base {
+  :root {
+    /* Light Theme (Warm) */
+    --bg-paper: #FDFBF7;
+    --bg-sidebar: #F7F5F0;
+    --bg-modal: #FFFFFF;
+    --bg-surface: #F5F5F4; /* stone-100 */
+    --bg-surface-hover: #E7E5E4; /* stone-200 */
+
+    --fg-ink: #2D2A26;
+    --fg-muted: #78716C; /* stone-500 */
+    --fg-subtle: #A8A29E; /* stone-400 */
+
+    --border-base: #E7E5E4; /* stone-200 */
+    --border-focus: #A8A29E; /* stone-400 */
+  }
+
+  .dark {
+    /* Dark Theme (Warm Charcoal) */
+    --bg-paper: #1E1C1A;
+    --bg-sidebar: #252321;
+    --bg-modal: #23211f;
+    --bg-surface: #2A2826;
+    --bg-surface-hover: #353331;
+
+    --fg-ink: #EBE5E0;
+    --fg-muted: #A8A29E;
+    --fg-subtle: #57534E; /* stone-600 */
+
+    --border-base: #44403C; /* stone-700 */
+    --border-focus: #57534E; /* stone-600 */
+  }
+
   body {
-    @apply bg-paper text-ink font-sans;
+    @apply bg-paper text-ink font-sans transition-colors duration-200;
   }
 
   h1,
@@ -89,7 +130,7 @@
 
   /* Code Block - Notion Style */
   .prose pre {
-    background-color: #F7F6F3;
+    background-color: var(--bg-surface);
     border-radius: 4px;
     padding: 2rem 1rem 1rem 1rem;
     margin-top: 0.5rem !important;
@@ -98,7 +139,7 @@
   }
 
   :is(.dark .prose pre) {
-    background-color: #2c2c2c;
+    background-color: var(--bg-surface);
   }
 
   /* Inline Code */
@@ -200,18 +241,18 @@
   }
 
   .prose th {
-    background-color: #f9fafb;
+    background-color: var(--bg-surface);
     font-weight: 600;
     text-align: left;
   }
 
   :is(.dark .prose th) {
-    background-color: #2c2c2c;
-    border-color: #404040;
+    background-color: var(--bg-surface);
+    border-color: var(--border-base);
   }
 
   :is(.dark .prose td) {
-    border-color: #404040;
+    border-color: var(--border-base);
   }
 
   .prose .selectedCell:after {
