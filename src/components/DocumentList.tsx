@@ -115,44 +115,48 @@ const DocumentListItem = React.memo(({
 });
 
 export default function DocumentList({ viewType }: DocumentListProps) {
+    // 1. Subscribe to stable actions
     const {
         openDocument,
-        currentDocId,
-        notes,
-        favorites,
-        trash,
         toggleFavoriteNote,
         moveNoteToTrash,
         restoreNoteFromTrash,
         deleteNotePermanently
     } = useAppStore(useShallow(state => ({
         openDocument: state.openDocument,
-        currentDocId: state.currentDocId,
-        notes: state.notes,
-        favorites: state.favorites,
-        trash: state.trash,
         toggleFavoriteNote: state.toggleFavoriteNote,
         moveNoteToTrash: state.moveNoteToTrash,
         restoreNoteFromTrash: state.restoreNoteFromTrash,
         deleteNotePermanently: state.deleteNotePermanently
     })));
 
-    // Optimize lookups by converting favorites array to a Set
-    const favoritesSet = useMemo(() => new Set(favorites), [favorites]);
+    // 2. Subscribe to currentDocId (primitive)
+    const currentDocId = useAppStore(useShallow(state => state.currentDocId));
 
-    // Derive documents from store data based on view type
-    const documents = useMemo(() => {
+    // 3. Subscribe to favorites (needed for star icon in all views, stable unless toggled)
+    const favorites = useAppStore(useShallow(state => state.favorites));
+
+    // 4. Optimized documents selection:
+    // Only subscribe to the specific list needed for the current view.
+    // This prevents re-renders when `notes` updates but we are in `trash` view,
+    // or when `notes` updates but the filtered `favorites` list remains shallowly equal.
+    const documents = useAppStore(useShallow(state => {
         switch (viewType) {
             case 'all-notes':
-                return notes;
+                return state.notes;
             case 'favorites':
-                return notes.filter(n => favoritesSet.has(n.id));
+                // Only return notes that are in favorites.
+                // useShallow will prevent re-render if the resulting array is shallowly equal to previous.
+                return state.notes.filter(n => state.favorites.includes(n.id));
             case 'trash':
-                return trash;
+                return state.trash;
             default:
                 return [];
         }
-    }, [viewType, notes, favoritesSet, trash]);
+    }));
+
+    // Optimize lookups by converting favorites array to a Set
+    const favoritesSet = useMemo(() => new Set(favorites), [favorites]);
 
     const handleToggleFavorite = useCallback(async (e: React.MouseEvent, id: string) => {
         e.stopPropagation();
