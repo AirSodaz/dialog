@@ -5,3 +5,7 @@
 ## 2025-10-26 - [Native Tooltips for Micro-UX]
 **Learning:** For lightweight "Micro-UX" enhancements on icon-only buttons, standard HTML `title` attributes combined with `aria-label` provide immediate accessibility and usability value without the overhead/complexity of JavaScript tooltip libraries.
 **Action:** Use `title` + `aria-label` pair for icon-only toolbar buttons when a full tooltip component isn't strictly required or available.
+
+## 2025-10-27 - [Accessible Status Indicators]
+**Learning:** For dynamic status icons (like loading spinners vs. idle icons), using a container with `role="status"` and a dynamic `aria-label` ensures screen readers announce state changes immediately, while keeping the visual implementation flexible.
+**Action:** Wrap status icons in a `div` with `role="status"` and use `aria-label` to describe the current state (e.g., "Generating content"), hiding the icon itself with `aria-hidden="true"`.

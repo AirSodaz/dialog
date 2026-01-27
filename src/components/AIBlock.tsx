@@ -91,11 +91,15 @@ export const AIBlock = ({ node, deleteNode, editor }: NodeViewProps) => {
     return (
         <NodeViewWrapper className="my-2">
             <div className="flex items-center gap-3 p-1 rounded-lg bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 shadow-sm w-full max-w-2xl mx-auto">
-                <div className="flex items-center justify-center w-8 h-8 rounded-md bg-stone-100 dark:bg-stone-800 text-stone-500 shrink-0 ml-1">
+                <div
+                    className="flex items-center justify-center w-8 h-8 rounded-md bg-stone-100 dark:bg-stone-800 text-stone-500 shrink-0 ml-1"
+                    role="status"
+                    aria-label={isLoading ? "Generating content" : "AI Assistant"}
+                >
                     {isLoading ? (
-                        <span className="animate-spin text-xs">⟳</span>
+                        <span className="animate-spin text-xs" aria-hidden="true">⟳</span>
                     ) : (
-                        <Sparkles className="w-4 h-4" />
+                        <Sparkles className="w-4 h-4" aria-hidden="true" />
                     )}
                 </div>
 
@@ -108,12 +112,15 @@ export const AIBlock = ({ node, deleteNode, editor }: NodeViewProps) => {
                         onKeyDown={handleKeyDown}
                         disabled={isLoading}
                         placeholder={isLoading ? "Generating..." : "Ask AI to write something..."}
+                        aria-label="AI prompt"
                         className="flex-1 bg-transparent border-none focus:outline-none text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 h-9"
                     />
                     {!isLoading && (
                         <button
                             type="submit"
                             disabled={!prompt.trim()}
+                            aria-label="Submit prompt"
+                            title="Submit prompt"
                             className="p-1.5 rounded-md bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity mr-1"
                         >
                             <ArrowUp className="w-4 h-4" />
