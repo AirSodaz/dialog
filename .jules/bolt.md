@@ -9,3 +9,7 @@
 ## 2024-05-24 - Store and IPC Throttling
 **Learning:** The `Editor` was triggering `updateNote` (Zustand) and `saveDocument` (IPC to `workspace.json`) on every keystroke. This caused the Sidebar to re-render constantly (due to `updatedAt` change) and hammered the disk with JSON writes, despite Dexie handling immediate persistence effectively.
 **Action:** Decouple high-frequency "safety saves" (Dexie) from "metadata sync" (Store/IPC). Use a throttle or debounce strategy for store updates and file system syncs, while keeping local DB writes immediate.
+
+## 2024-05-25 - Zustand v5 Equality Pattern
+**Learning:** Zustand v5 removed the `equalityFn` parameter from the default hook. Using `useShallow` works for shallow object comparisons but fails for derived arrays of new objects (like mapped lists).
+**Action:** For selectors returning derived arrays of objects that need deep equality (like list items), return a serialized string (e.g., `JSON.stringify`) from the selector and parse it in the component. This ensures the selector result is stable (value equality) even if object references change.
