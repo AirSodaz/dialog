@@ -229,11 +229,12 @@ export default function SettingsModal() {
                             <div className="space-y-6">
                                 {/* Provider Selector */}
                                 <div>
-                                    <label className="block text-sm font-medium text-muted mb-2">
+                                    <label htmlFor="ai-provider" className="block text-sm font-medium text-muted mb-2">
                                         AI Provider
                                     </label>
                                     <div className="grid grid-cols-1 gap-2">
                                         <select
+                                            id="ai-provider"
                                             value={aiConfig.provider}
                                             onChange={(e) => handleProviderChange(e.target.value)}
                                             className="w-full px-3 py-2 rounded-lg bg-surface border border-border-base text-ink focus:outline-none focus:ring-2 focus:ring-border-focus"
@@ -251,11 +252,12 @@ export default function SettingsModal() {
                                 <div className="space-y-4 pt-4 border-t border-border-base">
                                     {/* Base URL */}
                                     <div>
-                                        <label className="flex items-center gap-2 text-sm font-medium text-muted mb-1.5">
+                                        <label htmlFor="ai-base-url" className="flex items-center gap-2 text-sm font-medium text-muted mb-1.5">
                                             <Server className="w-3.5 h-3.5" />
                                             Base URL
                                         </label>
                                         <input
+                                            id="ai-base-url"
                                             type="text"
                                             value={aiConfig.baseUrl}
                                             onChange={(e) => updateAiConfig('baseUrl', e.target.value)}
@@ -266,11 +268,12 @@ export default function SettingsModal() {
 
                                     {/* API Key */}
                                     <div>
-                                        <label className="flex items-center gap-2 text-sm font-medium text-muted mb-1.5">
+                                        <label htmlFor="ai-api-key" className="flex items-center gap-2 text-sm font-medium text-muted mb-1.5">
                                             <Key className="w-3.5 h-3.5" />
                                             API Key
                                         </label>
                                         <input
+                                            id="ai-api-key"
                                             type="password"
                                             value={aiConfig.apiKey}
                                             onChange={(e) => updateAiConfig('apiKey', e.target.value)}
@@ -284,11 +287,12 @@ export default function SettingsModal() {
 
                                     {/* Model */}
                                     <div>
-                                        <label className="flex items-center gap-2 text-sm font-medium text-muted mb-1.5">
+                                        <label htmlFor="ai-model" className="flex items-center gap-2 text-sm font-medium text-muted mb-1.5">
                                             <Hash className="w-3.5 h-3.5" />
                                             Model Name
                                         </label>
                                         <input
+                                            id="ai-model"
                                             type="text"
                                             value={aiConfig.model}
                                             onChange={(e) => updateAiConfig('model', e.target.value)}

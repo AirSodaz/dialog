@@ -42,6 +42,10 @@ describe('AIBlock', () => {
                 getPos={() => 0}
                 selected={false}
                 extension={{} as any}
+                decorations={[]}
+                view={{} as any}
+                innerDecorations={[] as any}
+                HTMLAttributes={{}}
             />
         );
 
@@ -68,6 +72,10 @@ describe('AIBlock', () => {
                 getPos={() => 0}
                 selected={false}
                 extension={{} as any}
+                decorations={[]}
+                view={{} as any}
+                innerDecorations={[] as any}
+                HTMLAttributes={{}}
             />
         );
 
