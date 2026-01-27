@@ -71,6 +71,7 @@ const DocumentListItem = React.memo(({
                             onClick={(e) => onRestore(e, id)}
                             className="p-1.5 rounded hover:bg-border-base text-muted"
                             title="Restore"
+                            aria-label="Restore"
                         >
                             <RotateCcw className="w-4 h-4" />
                         </button>
@@ -78,6 +79,7 @@ const DocumentListItem = React.memo(({
                             onClick={(e) => onPermanentDelete(e, id)}
                             className="p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400"
                             title="Delete permanently"
+                            aria-label="Delete permanently"
                         >
                             <Trash2 className="w-4 h-4" />
                         </button>
@@ -93,6 +95,7 @@ const DocumentListItem = React.memo(({
                                     : "text-subtle"
                             )}
                             title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
                         >
                             <Star className={cn("w-4 h-4", isFavorite && "fill-current")} />
                         </button>
@@ -100,6 +103,7 @@ const DocumentListItem = React.memo(({
                             onClick={(e) => onMoveToTrash(e, id)}
                             className="p-1.5 rounded hover:bg-border-base text-subtle hover:text-red-500"
                             title="Move to trash"
+                            aria-label="Move to trash"
                         >
                             <Trash2 className="w-4 h-4" />
                         </button>
