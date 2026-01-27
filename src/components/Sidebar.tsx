@@ -47,14 +47,21 @@ export default function Sidebar() {
         createNote: state.createNote,
     })));
 
-    // Derive recent pages from store data with memoized selector to prevent unnecessary re-renders
-    // when unrelated notes are updated (e.g. during typing)
-    const recentPages = useAppStore(useShallow((state) =>
-        state.recentDocs
-            .map(id => state.notes.find(n => n.id === id))
-            .filter((n): n is { id: string, title: string, updatedAt: number } => !!n)
-            .slice(0, 5)
-    ));
+    // Derive recent pages from store data using JSON serialization for stability.
+    // This prevents re-renders when only timestamps change (common during typing)
+    // or when object references change but content is identical.
+    const recentPagesJson = useAppStore((state) => {
+        const pages = state.recentDocs
+            .map(id => {
+                const note = state.notes.find(n => n.id === id);
+                return note ? { id: note.id, title: note.title } : null;
+            })
+            .filter((n): n is { id: string, title: string } => !!n)
+            .slice(0, 5);
+        return JSON.stringify(pages);
+    });
+
+    const recentPages: { id: string, title: string }[] = JSON.parse(recentPagesJson);
 
     const handleMouseEnter = () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
