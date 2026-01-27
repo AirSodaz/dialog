@@ -147,4 +147,27 @@ describe('SettingsModal', () => {
 
         consoleSpy.mockRestore();
     });
+
+    it('has accessible form inputs in AI tab', async () => {
+        render(<SettingsModal />);
+
+        // Switch to AI tab
+        const aiTab = screen.getByRole('button', { name: /AI Services/i });
+        expect(aiTab).toBeDefined();
+        fireEvent.click(aiTab);
+
+        // Verify inputs are accessible by label
+        await waitFor(() => {
+            expect(screen.getByLabelText('AI Provider')).toBeDefined();
+            expect(screen.getByLabelText('Base URL')).toBeDefined();
+            expect(screen.getByLabelText('API Key')).toBeDefined();
+            expect(screen.getByLabelText('Model Name')).toBeDefined();
+        });
+
+        // Verify they are associated with the correct inputs
+        expect(screen.getByLabelText('AI Provider').tagName).toBe('SELECT');
+        expect(screen.getByLabelText('Base URL').tagName).toBe('INPUT');
+        expect(screen.getByLabelText('API Key').tagName).toBe('INPUT');
+        expect(screen.getByLabelText('Model Name').tagName).toBe('INPUT');
+    });
 });
