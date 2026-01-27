@@ -1,3 +1,7 @@
 ## 2024-05-23 - Zustand Selector Optimization
 **Learning:** The codebase uses `useAppStore()` without selectors in many places (e.g., `App.tsx`, `DocumentList.tsx`), causing components to subscribe to the *entire* state. This leads to widespread re-renders on minor state changes (like `settingsOpen`).
 **Action:** Always use `useShallow` or specific selectors when using `useAppStore` in performance-sensitive components to isolate updates.
+
+## 2024-05-24 - Selector-Based Derivation
+**Learning:** React components often re-render unnecessarily when subscribing to large lists (like `notes`) just to filter a few items (like `recentPages`). `useShallow` works on derived arrays too—it compares the elements. If the derived elements (references) haven't changed, the component won't re-render, even if the source list reference changed.
+**Action:** Move expensive or filtering logic into the selector itself and wrap with `useShallow`, rather than selecting the whole list and filtering in the render body.
