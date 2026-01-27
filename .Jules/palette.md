@@ -9,3 +9,7 @@
 ## 2025-10-27 - [Accessible Status Indicators]
 **Learning:** For dynamic status icons (like loading spinners vs. idle icons), using a container with `role="status"` and a dynamic `aria-label` ensures screen readers announce state changes immediately, while keeping the visual implementation flexible.
 **Action:** Wrap status icons in a `div` with `role="status"` and use `aria-label` to describe the current state (e.g., "Generating content"), hiding the icon itself with `aria-hidden="true"`.
+
+## 2025-10-27 - [Combobox Pattern for Search]
+**Learning:** For custom search modals, the standard `input` + `list` structure is opaque to screen readers; implementing the full ARIA Combobox pattern (`role="combobox"`, `aria-activedescendant`, `role="listbox"`) makes the "type to filter" interaction accessible without changing visual behavior.
+**Action:** Always implement `role="combobox"` on search inputs that filter a list, ensuring selection state is mirrored via `aria-activedescendant`.

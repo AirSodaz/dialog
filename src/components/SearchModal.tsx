@@ -100,6 +100,11 @@ export default function SearchModal() {
                         onKeyDown={handleKeyDown}
                         placeholder="Search notes..."
                         className="flex-1 bg-transparent text-ink placeholder-subtle outline-none text-base"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-expanded={results.length > 0}
+                        aria-controls="search-results"
+                        aria-activedescendant={results[selectedIndex] ? `result-${results[selectedIndex].id}` : undefined}
                     />
                     <button
                         onClick={closeSearch}
@@ -118,10 +123,17 @@ export default function SearchModal() {
                             {query ? 'No notes found' : 'No notes yet'}
                         </div>
                     ) : (
-                        <div className="py-2">
+                        <div
+                            className="py-2"
+                            id="search-results"
+                            role="listbox"
+                        >
                             {results.map((doc, index) => (
                                 <div
                                     key={doc.id}
+                                    id={`result-${doc.id}`}
+                                    role="option"
+                                    aria-selected={index === selectedIndex}
                                     onClick={() => openDocument(doc.id)}
                                     className={cn(
                                         "flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors",
