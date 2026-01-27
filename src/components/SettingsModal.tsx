@@ -166,6 +166,7 @@ export default function SettingsModal() {
                         </h2>
                         <button
                             onClick={closeSettings}
+                            aria-label="Close settings"
                             className="p-1.5 rounded-lg hover:bg-surface-hover text-muted transition-colors"
                         >
                             <X className="w-5 h-5" />

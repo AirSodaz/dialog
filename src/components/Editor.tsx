@@ -253,6 +253,8 @@ const Editor = () => {
                 >
                     <button
                         onClick={() => editor.chain().focus().toggleBold().run()}
+                        aria-label="Toggle bold"
+                        title="Toggle bold"
                         className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${editor.isActive('bold')
                             ? 'bg-surface-hover text-ink'
                             : 'text-muted hover:bg-surface-hover'
@@ -262,6 +264,8 @@ const Editor = () => {
                     </button>
                     <button
                         onClick={() => editor.chain().focus().toggleItalic().run()}
+                        aria-label="Toggle italic"
+                        title="Toggle italic"
                         className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${editor.isActive('italic')
                             ? 'bg-surface-hover text-ink'
                             : 'text-muted hover:bg-surface-hover'
@@ -290,6 +294,8 @@ const Editor = () => {
                                 })
                                 .run();
                         }}
+                        aria-label="Ask AI"
+                        title="Ask AI"
                         className="w-8 h-8 rounded flex items-center justify-center transition-colors text-muted hover:bg-surface-hover"
                     >
                         <Sparkles className="w-4 h-4" />
