@@ -78,7 +78,7 @@ export const createDocument = async (title: string = 'Untitled'): Promise<string
     return id;
 };
 
-export const saveDocument = async (id: string, content: any, title?: string, options?: { isDeleted?: boolean }) => {
+export const saveDocument = async (id: string, content: any, title?: string, options?: { isDeleted?: boolean, skipWorkspaceSync?: boolean }) => {
     const existing = await db.documents.get(id);
     const now = Date.now();
     const finalTitle = title ?? existing?.title ?? 'Untitled';
@@ -94,7 +94,7 @@ export const saveDocument = async (id: string, content: any, title?: string, opt
     });
 
     // Sync to workspace if it's a content/title update (and not deleted)
-    if (!options?.isDeleted && !existing?.isDeleted) {
+    if (!options?.isDeleted && !existing?.isDeleted && !options?.skipWorkspaceSync) {
         await updateNoteInWorkspace(id, { title: finalTitle, updatedAt: now });
     }
 };
