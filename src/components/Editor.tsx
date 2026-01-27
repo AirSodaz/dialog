@@ -41,6 +41,7 @@ const Editor = () => {
     const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'unsaved'>('synced');
     const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isLoadingRef = useRef(false);
+    const lastTitleRef = useRef<string>("");
 
 
     // Helper to extract title from content
@@ -65,21 +66,25 @@ const Editor = () => {
 
             const content = editor.getJSON();
             const title = extractTitle(content);
+            const titleChanged = title !== lastTitleRef.current;
             console.log('[Editor] Content changed, triggering save. DocID:', currentDocId, 'Title:', title);
 
             // Save to Dexie (Layer 1)
-            const now = Date.now();
-            saveDocument(currentDocId, content, title)
+            // Skip workspace sync (IPC call) if title hasn't changed to prevent rapid IO/renders
+            saveDocument(currentDocId, content, title, { skipWorkspaceSync: !titleChanged })
                 .then(() => {
                     console.log('[Editor] Saved to IndexedDB (Dexie)');
-                    // Update the store to keep UI in sync
-                    updateNote(currentDocId, { title, updatedAt: now });
+                    // Update the store to keep UI in sync ONLY if title changed (priority update)
+                    if (titleChanged) {
+                        updateNote(currentDocId, { title, updatedAt: Date.now() });
+                        lastTitleRef.current = title;
+                    }
                 })
                 .catch(err => console.error('[Editor] Failed to save to Dexie:', err));
 
             setSyncStatus('unsaved');
 
-            // Debounced save to file system (Layer 2)
+            // Debounced save to file system (Layer 2) & Finalize Workspace Sync
             if (saveTimerRef.current) {
                 clearTimeout(saveTimerRef.current);
             }
@@ -88,12 +93,12 @@ const Editor = () => {
                 setSyncStatus('saving');
                 console.log('[Editor] Starting file system save...');
                 try {
+                    // 1. Write content file
                     const fileContent = JSON.stringify({
                         title: title,
                         content: content
                     });
 
-                    // Use execution directory for storage (Optimized)
                     const filePath = await getContentPath(currentDocId);
                     console.log('[Editor] Target File Path:', filePath);
 
@@ -101,7 +106,14 @@ const Editor = () => {
                         path: filePath,
                         content: fileContent
                     });
-                    console.log(`[Editor] Document saved to ${filePath}`);
+
+                    // 2. Ensure workspace.json and global store are up to date (timestamp update)
+                    const now = Date.now();
+                    // We call saveDocument again with skipWorkspaceSync=false to force workspace update
+                    await saveDocument(currentDocId, content, title, { skipWorkspaceSync: false });
+                    updateNote(currentDocId, { title, updatedAt: now });
+
+                    console.log(`[Editor] Document saved to ${filePath} and workspace synced`);
                     setSyncStatus('synced');
                 } catch (error) {
                     console.error('[Editor] Failed to save document to file system:', error);
