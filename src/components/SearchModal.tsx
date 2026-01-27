@@ -104,6 +104,7 @@ export default function SearchModal() {
                     <button
                         onClick={closeSearch}
                         aria-label="Close search"
+                        title="Close search"
                         className="p-1 rounded hover:bg-surface-hover text-subtle"
                     >
                         <X className="w-4 h-4" />
