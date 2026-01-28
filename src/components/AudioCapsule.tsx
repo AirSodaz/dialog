@@ -221,6 +221,34 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
         setProgress(percentage * 100);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        const audio = audioRef.current;
+        if (!audio || !duration) return;
+
+        let newTime = audio.currentTime;
+        const step = 5; // 5 seconds step
+
+        switch (e.key) {
+            case 'ArrowLeft':
+                newTime = Math.max(0, audio.currentTime - step);
+                break;
+            case 'ArrowRight':
+                newTime = Math.min(duration, audio.currentTime + step);
+                break;
+            case ' ':
+            case 'Enter':
+                e.preventDefault();
+                togglePlayback();
+                return;
+            default:
+                return;
+        }
+
+        audio.currentTime = newTime;
+        setProgress((newTime / duration) * 100);
+        e.preventDefault();
+    };
+
     // Recording Mode UI
     if (!hasRecording) {
         return (
@@ -270,7 +298,7 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
 
                             {micError ? (
                                 /* Error message */
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2" role="alert">
                                     <span className="text-xs text-red-500 max-w-[160px]">{micError}</span>
                                 </div>
                             ) : (
@@ -314,9 +342,17 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
 
                 {/* Waveform Visualization */}
                 <div
-                    className="relative flex items-center gap-0.5 h-8 cursor-pointer select-none"
+                    className="relative flex items-center gap-0.5 h-8 cursor-pointer select-none outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-500 rounded-sm"
                     onClick={handleWaveformClick}
+                    onKeyDown={handleKeyDown}
                     style={{ minWidth: '160px' }}
+                    role="slider"
+                    tabIndex={0}
+                    aria-label="Seek audio"
+                    aria-valuemin={0}
+                    aria-valuemax={duration || 0}
+                    aria-valuenow={audioRef.current?.currentTime || 0}
+                    aria-valuetext={duration ? `${formatTime(audioRef.current?.currentTime || 0)} of ${formatTime(duration)}` : undefined}
                 >
                     {waveformBars.map((height, i) => {
                         const barProgress = (i / waveformBars.length) * 100;
