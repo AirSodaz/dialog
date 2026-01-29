@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, FocusEvent } from "react";
+import { useState, useRef, useEffect, FocusEvent, useCallback, memo } from "react";
 import { cn } from "../lib/utils";
 import {
     FileText,
@@ -8,7 +8,7 @@ import {
     Plus,
     Search
 } from "lucide-react";
-import { useAppStore, ViewType } from "../store/appStore";
+import { useAppStore } from "../store/appStore";
 import { useShallow } from "zustand/react/shallow";
 import { loadDocument } from "../db/db";
 
@@ -80,7 +80,7 @@ export default function Sidebar() {
         }
     }, []);
 
-    const handleNewPage = async () => {
+    const handleNewPage = useCallback(async () => {
         // Check if current document is empty
         if (currentDocId) {
             const currentDoc = await loadDocument(currentDocId);
@@ -96,15 +96,15 @@ export default function Sidebar() {
         }
         const newId = await createNote();
         openDocument(newId);
-    };
+    }, [currentDocId, currentView, openDocument, createNote]);
 
-    const handleSearch = () => {
+    const handleSearch = useCallback(() => {
         openSearch();
-    };
+    }, [openSearch]);
 
-    const handleNavigation = (view: ViewType) => {
-        setView(view);
-    };
+    const handleNavAllNotes = useCallback(() => setView('all-notes'), [setView]);
+    const handleNavFavorites = useCallback(() => setView('favorites'), [setView]);
+    const handleNavTrash = useCallback(() => setView('trash'), [setView]);
 
     const handleFocusLeave = (e: FocusEvent) => {
         // Only close if focus is moving outside the sidebar
@@ -157,19 +157,19 @@ export default function Sidebar() {
                         icon={FileText}
                         label="All Notes"
                         active={currentView === 'all-notes'}
-                        onClick={() => handleNavigation('all-notes')}
+                        onClick={handleNavAllNotes}
                     />
                     <SidebarItem
                         icon={Star}
                         label="Favorites"
                         active={currentView === 'favorites'}
-                        onClick={() => handleNavigation('favorites')}
+                        onClick={handleNavFavorites}
                     />
                     <SidebarItem
                         icon={Trash2}
                         label="Trash"
                         active={currentView === 'trash'}
-                        onClick={() => handleNavigation('trash')}
+                        onClick={handleNavTrash}
                     />
 
                     {/* Recent Pages */}
@@ -179,12 +179,12 @@ export default function Sidebar() {
                                 Recent
                             </div>
                             {recentPages.map((doc) => (
-                                <SidebarItem
+                                <RecentPageItem
                                     key={doc.id}
-                                    icon={FileText}
-                                    label={doc.title || 'Untitled'}
+                                    id={doc.id}
+                                    title={doc.title || 'Untitled'}
                                     active={currentView === 'editor' && currentDocId === doc.id}
-                                    onClick={() => openDocument(doc.id)}
+                                    onOpen={openDocument}
                                 />
                             ))}
                         </div>
@@ -204,7 +204,6 @@ export default function Sidebar() {
     );
 }
 
-
 interface SidebarItemProps {
     icon: any;
     label: string;
@@ -213,7 +212,7 @@ interface SidebarItemProps {
     onClick?: () => void;
 }
 
-function SidebarItem({ icon: Icon, label, shortcut, active, onClick }: SidebarItemProps) {
+const SidebarItem = memo(({ icon: Icon, label, shortcut, active, onClick }: SidebarItemProps) => {
     return (
         <button
             type="button"
@@ -239,5 +238,24 @@ function SidebarItem({ icon: Icon, label, shortcut, active, onClick }: SidebarIt
             )}
         </button>
     )
+});
+
+interface RecentPageItemProps {
+    id: string;
+    title: string;
+    active: boolean;
+    onOpen: (id: string) => void;
 }
 
+const RecentPageItem = memo(({ id, title, active, onOpen }: RecentPageItemProps) => {
+    const handleClick = useCallback(() => onOpen(id), [onOpen, id]);
+
+    return (
+        <SidebarItem
+            icon={FileText}
+            label={title}
+            active={active}
+            onClick={handleClick}
+        />
+    );
+});
