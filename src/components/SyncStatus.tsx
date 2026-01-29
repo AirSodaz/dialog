@@ -7,17 +7,18 @@ interface SyncStatusProps {
 }
 
 export const SyncStatus = ({ status, className }: SyncStatusProps) => {
-    if (status === 'synced') return null;
-
     return (
         <div
+            role="status"
+            aria-live="polite"
             className={twMerge(
                 'text-xs text-stone-400 font-medium transition-opacity duration-300 select-none',
                 status === 'saving' && 'animate-pulse',
+                status === 'synced' ? 'opacity-0' : 'opacity-100',
                 className
             )}
         >
-            {status === 'saving' ? 'Saving...' : 'Unsaved'}
+            {status === 'saving' ? 'Saving...' : (status === 'synced' ? 'Saved' : 'Unsaved')}
         </div>
     );
 };
