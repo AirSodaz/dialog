@@ -57,8 +57,13 @@ export const CommandList = forwardRef((props: CommandListProps, ref) => {
     }
 
     return (
-        <div className="bg-white dark:bg-stone-900 rounded-lg shadow-xl border border-stone-200 dark:border-stone-800 overflow-hidden min-w-72 p-2 max-h-[50vh] overflow-y-auto">
-            <div className="text-xs font-medium text-stone-500 mb-2 px-2">Basic blocks</div>
+        <div
+            id="slash-command-list"
+            role="listbox"
+            aria-label="Editor commands"
+            className="bg-white dark:bg-stone-900 rounded-lg shadow-xl border border-stone-200 dark:border-stone-800 overflow-hidden min-w-72 p-2 max-h-[50vh] overflow-y-auto"
+        >
+            <div className="text-xs font-medium text-stone-500 mb-2 px-2" aria-hidden="true">Basic blocks</div>
             {props.items.map((item, index) => (
                 <button
                     className={`flex items-center gap-3 w-full text-left px-2 py-2 rounded transition-colors ${index === selectedIndex
@@ -67,6 +72,9 @@ export const CommandList = forwardRef((props: CommandListProps, ref) => {
                         }`}
                     key={index}
                     onClick={() => selectItem(index)}
+                    role="option"
+                    aria-selected={index === selectedIndex}
+                    id={`slash-command-item-${index}`}
                 >
                     {item.icon && (
                         <div className="flex items-center justify-center w-10 h-10 border border-stone-200 dark:border-stone-700 rounded bg-white dark:bg-stone-800">
