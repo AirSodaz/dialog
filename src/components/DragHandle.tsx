@@ -7,6 +7,10 @@ interface DragHandleProps {
     editor: Editor;
 }
 
+/**
+ * Component for dragging and dropping blocks in the editor.
+ * Renders a handle next to the currently hovered block.
+ */
 export const DragHandle = ({ editor }: DragHandleProps) => {
     const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
     const [activeBlock, setActiveBlock] = useState<HTMLElement | null>(null);

@@ -12,7 +12,13 @@ import { useAppStore } from "../store/appStore";
 import { useShallow } from "zustand/react/shallow";
 import { loadDocument } from "../db/db";
 
-// Helper function to check if Tiptap content is empty
+/**
+ * Checks if Tiptap content is considered empty.
+ * An empty document typically has no content or just an empty paragraph.
+ *
+ * @param content The Tiptap JSON content.
+ * @returns {boolean} True if the content is empty, false otherwise.
+ */
 const isContentEmpty = (content: any): boolean => {
     if (!content) return true;
     if (!content.content || content.content.length === 0) return true;
@@ -26,6 +32,11 @@ const isContentEmpty = (content: any): boolean => {
     return false;
 };
 
+/**
+ * Sidebar component.
+ * Provides navigation, search, quick actions, and a list of recent documents.
+ * It handles its own visibility state (hover to reveal).
+ */
 export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false);
     const timeoutRef = useRef<number | null>(null);
@@ -63,11 +74,13 @@ export default function Sidebar() {
 
     const recentPages: { id: string, title: string }[] = JSON.parse(recentPagesJson);
 
+    /** Handles mouse enter event to show sidebar. */
     const handleMouseEnter = () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         setIsOpen(true);
     };
 
+    /** Handles mouse leave event to hide sidebar with a delay. */
     const handleMouseLeave = () => {
         timeoutRef.current = setTimeout(() => {
             setIsOpen(false);
@@ -80,6 +93,10 @@ export default function Sidebar() {
         }
     }, []);
 
+    /**
+     * Creates a new page.
+     * If the current page is empty, it switches to it instead of creating a new one.
+     */
     const handleNewPage = useCallback(async () => {
         // Check if current document is empty
         if (currentDocId) {
@@ -106,6 +123,10 @@ export default function Sidebar() {
     const handleNavFavorites = useCallback(() => setView('favorites'), [setView]);
     const handleNavTrash = useCallback(() => setView('trash'), [setView]);
 
+    /**
+     * Handles focus loss on the sidebar.
+     * Closes the sidebar only if focus moves outside of it.
+     */
     const handleFocusLeave = (e: FocusEvent) => {
         // Only close if focus is moving outside the sidebar
         if (!e.currentTarget.contains(e.relatedTarget)) {
@@ -205,13 +226,21 @@ export default function Sidebar() {
 }
 
 interface SidebarItemProps {
+    /** Icon component to display. */
     icon: any;
+    /** Text label for the item. */
     label: string;
+    /** Optional keyboard shortcut hint. */
     shortcut?: string;
+    /** Whether the item is currently active/selected. */
     active?: boolean;
+    /** Click handler. */
     onClick?: () => void;
 }
 
+/**
+ * Reusable sidebar navigation item.
+ */
 const SidebarItem = memo(({ icon: Icon, label, shortcut, active, onClick }: SidebarItemProps) => {
     return (
         <button
@@ -247,6 +276,9 @@ interface RecentPageItemProps {
     onOpen: (id: string) => void;
 }
 
+/**
+ * Item representing a recently opened page in the sidebar.
+ */
 const RecentPageItem = memo(({ id, title, active, onOpen }: RecentPageItemProps) => {
     const handleClick = useCallback(() => onOpen(id), [onOpen, id]);
 

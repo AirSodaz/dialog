@@ -15,6 +15,10 @@ const PROVIDERS = [
     { id: 'custom', name: 'Custom (OpenAI Compatible)', baseUrl: '' },
 ] as const;
 
+/**
+ * Settings modal component.
+ * Manages application configuration including theme and AI provider settings.
+ */
 export default function SettingsModal() {
     const { settingsOpen, closeSettings } = useAppStore(useShallow((state) => ({
         settingsOpen: state.settingsOpen,

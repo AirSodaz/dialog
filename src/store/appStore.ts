@@ -2,52 +2,88 @@ import { create } from 'zustand';
 import { setActiveDoc, loadWorkspace, saveWorkspace } from '../utils/workspace';
 import { getAllDocuments, getFavorites, getTrash } from '../db/db';
 
+/**
+ * Defines the available views in the application.
+ * - 'editor': The main text editor view.
+ * - 'all-notes': List of all notes.
+ * - 'favorites': List of favorite notes.
+ * - 'trash': List of deleted notes.
+ */
 export type ViewType = 'editor' | 'all-notes' | 'favorites' | 'trash';
 
+/**
+ * Interface for the global application state managed by Zustand.
+ */
 interface AppState {
-    // Current view
+    /** The current active view. */
     currentView: ViewType;
+    /** The ID of the currently open document, or null if none. */
     currentDocId: string | null;
 
-    // Sidebar state
+    /** Whether the sidebar is collapsed. */
     sidebarCollapsed: boolean;
+    /** The width of the sidebar in pixels. */
     sidebarWidth: number;
 
-    // Modals
+    /** Whether the search modal is open. */
     searchOpen: boolean;
+    /** Whether the settings modal is open. */
     settingsOpen: boolean;
 
-    // Workspace loaded flag
+    /** Whether the workspace configuration has been loaded. */
     workspaceLoaded: boolean;
 
-    // Lists loaded from workspace.json
+    /** List of recent document IDs. */
     recentDocs: string[];
+    /** List of all notes metadata. */
     notes: { id: string, title: string, updatedAt: number }[];
+    /** List of favorite document IDs. */
     favorites: string[];
+    /** List of trashed documents metadata. */
     trash: { id: string, title: string, deletedAt: number }[];
 
     // Actions
+    /** Sets the current view. */
     setView: (view: ViewType) => void;
+    /** Sets the current document ID without changing view. */
     setCurrentDoc: (docId: string | null) => void;
+    /** Opens a document and switches to the editor view. */
     openDocument: (docId: string) => void;
+    /** Opens the search modal. */
     openSearch: () => void;
+    /** Closes the search modal. */
     closeSearch: () => void;
+    /** Toggles the search modal visibility. */
     toggleSearch: () => void;
+    /** Opens the settings modal. */
     openSettings: () => void;
+    /** Closes the settings modal. */
     closeSettings: () => void;
+    /** Sets the sidebar collapsed state. */
     setSidebarCollapsed: (collapsed: boolean) => void;
+    /** Sets the sidebar width. */
     setSidebarWidth: (width: number) => void;
+    /** Loads the application state from the workspace configuration. */
     loadFromWorkspace: () => Promise<void>;
 
     // Note Actions (Sync UI + DB)
+    /** Creates a new note and adds it to the state. */
     createNote: (title?: string) => Promise<string>;
+    /** Updates a note's metadata in the state. */
     updateNote: (id: string, updates: { title?: string, updatedAt?: number }) => void;
+    /** Toggles the favorite status of a note. */
     toggleFavoriteNote: (id: string) => Promise<void>;
+    /** Moves a note to the trash. */
     moveNoteToTrash: (id: string) => Promise<void>;
+    /** Restores a note from the trash. */
     restoreNoteFromTrash: (id: string) => Promise<void>;
+    /** Permanently deletes a note from the trash. */
     deleteNotePermanently: (id: string) => Promise<void>;
 }
 
+/**
+ * Zustand store hook for managing global application state.
+ */
 export const useAppStore = create<AppState>((set) => ({
     // Initial state
     currentView: 'editor',

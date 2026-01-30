@@ -11,17 +11,32 @@ import {
     permanentlyDeleteFromWorkspace
 } from '../utils/workspace';
 
+/**
+ * Interface representing a document in the database.
+ */
 export interface Document {
+    /** Unique identifier for the document. */
     id: string;
+    /** The title of the document. */
     title: string;
-    content: any; // JSON content from Tiptap
+    /** The JSON content of the document (Tiptap structure). */
+    content: any;
+    /** Timestamp of the last update. */
     updatedAt: number;
+    /** Whether the document is marked as favorite. */
     isFavorite?: boolean;
+    /** Whether the document is marked as deleted (soft delete). */
     isDeleted?: boolean;
+    /** Timestamp when the document was deleted. */
     deletedAt?: number;
 }
 
+/**
+ * Dexie database instance for Dialog.
+ * Manages local persistence of documents.
+ */
 class DialogDB extends Dexie {
+    /** Table for storing documents. */
     documents!: Table<Document>;
 
     constructor() {
@@ -39,9 +54,16 @@ class DialogDB extends Dexie {
     }
 }
 
+/** The singleton instance of the DialogDB. */
 export const db = new DialogDB();
 
-// Helper to sync to disk
+/**
+ * Saves a document to the file system.
+ * Writes the document content to a JSON file on disk.
+ *
+ * @param doc The document to save.
+ * @returns {Promise<void>} A promise that resolves when the file is written.
+ */
 const saveToDisk = async (doc: Document) => {
     try {
         const path = await getContentPath(doc.id);
@@ -54,7 +76,13 @@ const saveToDisk = async (doc: Document) => {
     }
 };
 
-// Create a new document
+/**
+ * Creates a new document.
+ * Initializes the document in the database, saves it to disk, and updates the workspace.
+ *
+ * @param title The title of the new document. Defaults to 'Untitled'.
+ * @returns {Promise<string>} The ID of the newly created document.
+ */
 export const createDocument = async (title: string = 'Untitled'): Promise<string> => {
     const id = crypto.randomUUID();
     const now = Date.now();
@@ -78,6 +106,18 @@ export const createDocument = async (title: string = 'Untitled'): Promise<string
     return id;
 };
 
+/**
+ * Updates an existing document.
+ * Saves changes to the database and optionally syncs with the workspace.
+ *
+ * @param id The ID of the document to update.
+ * @param content The new content for the document.
+ * @param title The new title for the document.
+ * @param options Additional options for the update.
+ * @param options.isDeleted Update the deletion status.
+ * @param options.skipWorkspaceSync If true, bypasses updating the workspace metadata.
+ * @returns {Promise<void>} A promise that resolves when the update is complete.
+ */
 export const saveDocument = async (id: string, content: any, title?: string, options?: { isDeleted?: boolean, skipWorkspaceSync?: boolean }) => {
     const existing = await db.documents.get(id);
     const now = Date.now();
@@ -99,11 +139,22 @@ export const saveDocument = async (id: string, content: any, title?: string, opt
     }
 };
 
+/**
+ * Loads a document by its ID.
+ *
+ * @param id The ID of the document to load.
+ * @returns {Promise<Document | undefined>} The loaded document, or undefined if not found.
+ */
 export const loadDocument = async (id: string) => {
     return await db.documents.get(id);
 };
 
-// Get all active (non-deleted) documents
+/**
+ * Retrieves all active (non-deleted) documents.
+ * Results are sorted by `updatedAt` in descending order.
+ *
+ * @returns {Promise<Document[]>} A list of active documents.
+ */
 export const getAllDocuments = async () => {
     return await db.documents
         .where('[isDeleted+updatedAt]')
@@ -112,7 +163,12 @@ export const getAllDocuments = async () => {
         .toArray();
 };
 
-// Get favorite documents
+/**
+ * Retrieves all favorite documents.
+ * Results are sorted by `updatedAt` in descending order.
+ *
+ * @returns {Promise<Document[]>} A list of favorite documents.
+ */
 export const getFavorites = async () => {
     return await db.documents
         .filter(doc => doc.isFavorite === true && !doc.isDeleted)
@@ -120,7 +176,12 @@ export const getFavorites = async () => {
         .sortBy('updatedAt');
 };
 
-// Get trashed documents
+/**
+ * Retrieves all trashed (soft-deleted) documents.
+ * Results are sorted by `deletedAt` in descending order.
+ *
+ * @returns {Promise<Document[]>} A list of trashed documents.
+ */
 export const getTrash = async () => {
     return await db.documents
         .filter(doc => doc.isDeleted === true)
@@ -128,7 +189,13 @@ export const getTrash = async () => {
         .sortBy('deletedAt');
 };
 
-// Toggle favorite status
+/**
+ * Toggles the favorite status of a document.
+ * Updates both the database and the workspace.
+ *
+ * @param id The ID of the document to toggle.
+ * @returns {Promise<void>} A promise that resolves when the update is complete.
+ */
 export const toggleFavorite = async (id: string) => {
     const doc = await db.documents.get(id);
     if (doc) {
@@ -138,7 +205,13 @@ export const toggleFavorite = async (id: string) => {
     }
 };
 
-// Move to trash (soft delete)
+/**
+ * Moves a document to the trash (soft delete).
+ * Sets `isDeleted` to true and updates the deletion timestamp.
+ *
+ * @param id The ID of the document to trash.
+ * @returns {Promise<void>} A promise that resolves when the operation is complete.
+ */
 export const moveToTrash = async (id: string) => {
     const now = Date.now();
     await db.documents.update(id, {
@@ -157,7 +230,13 @@ export const moveToTrash = async (id: string) => {
     }
 };
 
-// Restore from trash
+/**
+ * Restores a document from the trash.
+ * Resets `isDeleted` to false and updates the `updatedAt` timestamp.
+ *
+ * @param id The ID of the document to restore.
+ * @returns {Promise<void>} A promise that resolves when the operation is complete.
+ */
 export const restoreFromTrash = async (id: string) => {
     await db.documents.update(id, {
         isDeleted: false,
@@ -178,7 +257,13 @@ export const restoreFromTrash = async (id: string) => {
     }
 };
 
-// Permanently delete
+/**
+ * Permanently deletes a document from the database and disk.
+ * This action cannot be undone.
+ *
+ * @param id The ID of the document to delete.
+ * @returns {Promise<void>} A promise that resolves when the document is permanently deleted.
+ */
 export const permanentlyDelete = async (id: string) => {
     await db.documents.delete(id);
     try {
@@ -193,7 +278,13 @@ export const permanentlyDelete = async (id: string) => {
     await removeNoteFromWorkspace(id); // Safety ensure it's gone from notes if it was somehow there
 };
 
-// Search documents by title
+/**
+ * Searches for documents matching the query string in their title.
+ * Only searches non-deleted documents.
+ *
+ * @param query The search query string.
+ * @returns {Promise<Document[]>} A list of matching documents.
+ */
 export const searchDocuments = async (query: string) => {
     const lowerQuery = query.toLowerCase();
     return await db.documents

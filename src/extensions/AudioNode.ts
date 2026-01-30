@@ -2,6 +2,9 @@ import { Node, mergeAttributes } from '@tiptap/core';
 import { ReactNodeViewRenderer } from '@tiptap/react';
 import { AudioCapsule } from '../components/AudioCapsule';
 
+/**
+ * Options for the AudioNode extension.
+ */
 export interface AudioNodeOptions {
     HTMLAttributes: Record<string, any>;
 }
@@ -14,6 +17,10 @@ declare module '@tiptap/core' {
     }
 }
 
+/**
+ * Tiptap extension for handling audio content.
+ * Renders an `audio-node` element using the AudioCapsule component.
+ */
 export const AudioNode = Node.create<AudioNodeOptions>({
     name: 'audioNode',
 

@@ -8,6 +8,12 @@ interface DocumentListProps {
     viewType: 'all-notes' | 'favorites' | 'trash';
 }
 
+/**
+ * Formats a timestamp into a human-readable date string.
+ *
+ * @param timestamp The timestamp to format.
+ * @returns {string} The formatted date string (e.g., "Jan 1, 2024").
+ */
 const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString(undefined, {
         month: 'short',
@@ -30,6 +36,10 @@ interface DocItemProps {
     onPermanentDelete: (e: React.MouseEvent, id: string) => void;
 }
 
+/**
+ * Individual document item in the list.
+ * Memoized to prevent unnecessary re-renders when other items change.
+ */
 const DocumentListItem = React.memo(({
     id,
     title,
@@ -114,6 +124,11 @@ const DocumentListItem = React.memo(({
     );
 });
 
+/**
+ * Component for listing documents based on the current view type.
+ * Supports 'all-notes', 'favorites', and 'trash' views.
+ * Handles document actions like opening, toggling favorites, and deletion.
+ */
 export default function DocumentList({ viewType }: DocumentListProps) {
     // 1. Subscribe to stable actions
     const {

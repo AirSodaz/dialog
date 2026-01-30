@@ -1,10 +1,16 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 
 export interface CommandListProps {
+    /** The list of command items to display. */
     items: any[];
+    /** Callback function to execute when a command is selected. */
     command: (item: any) => void;
 }
 
+/**
+ * Component for rendering the slash command menu.
+ * Displays a list of available commands and handles keyboard navigation.
+ */
 export const CommandList = forwardRef((props: CommandListProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 

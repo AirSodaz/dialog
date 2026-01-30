@@ -2,6 +2,11 @@ import { Node, mergeAttributes, InputRule } from '@tiptap/core';
 import { ReactNodeViewRenderer } from '@tiptap/react';
 import { AIBlock } from '../components/AIBlock';
 
+/**
+ * Tiptap extension for the AI Node.
+ * Renders an AI interaction block (AIBlock) within the editor.
+ * Triggered by the `/ai` command or input rule.
+ */
 export const AINode = Node.create({
     name: 'aiNode',
 

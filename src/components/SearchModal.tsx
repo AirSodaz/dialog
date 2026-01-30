@@ -5,6 +5,10 @@ import { useShallow } from 'zustand/react/shallow';
 import { Search, FileText, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 
+/**
+ * Modal component for searching notes.
+ * Provides a global search interface with keyboard navigation.
+ */
 export default function SearchModal() {
     const { searchOpen, closeSearch, openDocument } = useAppStore(useShallow((state) => ({
         searchOpen: state.searchOpen,
