@@ -1,4 +1,3 @@
-
 import { twMerge } from 'tailwind-merge';
 
 interface SyncStatusProps {
@@ -6,6 +5,10 @@ interface SyncStatusProps {
     className?: string;
 }
 
+/**
+ * Component to display the current synchronization status.
+ * Visual feedback for saving, saved, and unsaved states.
+ */
 export const SyncStatus = ({ status, className }: SyncStatusProps) => {
     return (
         <div

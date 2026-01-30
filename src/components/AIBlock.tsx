@@ -3,6 +3,10 @@ import { Sparkles, ArrowUp } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { getConfigValue } from '../utils/config';
 
+/**
+ * Tiptap NodeView for interacting with AI providers.
+ * Allows users to input prompts and receive generated text directly in the editor.
+ */
 export const AIBlock = ({ node, deleteNode, editor }: NodeViewProps) => {
     const [prompt, setPrompt] = useState('');
     const [isLoading, setIsLoading] = useState(false);

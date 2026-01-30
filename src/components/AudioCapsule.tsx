@@ -3,6 +3,10 @@ import { Play, Pause, Mic, Square } from 'lucide-react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { getAssetPath } from '../utils/workspace';
 
+/**
+ * Tiptap NodeView for displaying and recording audio clips.
+ * Supports recording from microphone and playback of local files.
+ */
 export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);

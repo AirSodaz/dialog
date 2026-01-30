@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getContentPath, loadWorkspace, clearWorkspaceCache } from './workspace';
 
+/**
+ * Tests for workspace utility functions.
+ * Focuses on path resolution optimization and caching behavior.
+ */
+
 // Mock the tauri invoke function
 const invokeMock = vi.fn();
 

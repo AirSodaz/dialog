@@ -2,25 +2,27 @@ import { invoke } from '@tauri-apps/api/core';
 import { getAppConfigPath, getStorageDirPath } from './workspace';
 
 /**
- * Application configuration - stores app-level settings
- * Similar to Obsidian's app.json
+ * Application configuration interface.
+ * Stores app-level settings, similar to Obsidian's app.json.
  */
 export interface DialogConfig {
-    // Appearance
+    /** Visual appearance settings. */
     theme: 'light' | 'dark';
+
+    /** Optional accent color for the theme. */
     accentColor?: string;
 
-    // Editor settings
+    /** Editor-specific settings. */
     editor: {
         fontSize: number;
         lineHeight: number;
         spellcheck: boolean;
     };
 
-    // File settings
-    autoSaveInterval: number; // in milliseconds
+    /** Auto-save interval in milliseconds. */
+    autoSaveInterval: number;
 
-    // AI settings
+    /** AI provider configuration. */
     ai: {
         provider: 'openai' | 'gemini' | 'claude' | 'deepseek' | 'custom';
         baseUrl: string;
@@ -48,14 +50,19 @@ const DEFAULT_CONFIG: DialogConfig = {
 let configCache: DialogConfig | null = null;
 
 /**
- * Get the path to the config file in the execution directory
+ * Gets the path to the configuration file in the execution directory.
+ *
+ * @returns {Promise<string>} The absolute path to the config file.
  */
 async function getConfigPath(): Promise<string> {
     return getAppConfigPath();
 }
 
 /**
- * Helper to write config to file directly without triggering load loops
+ * Writes the configuration to a file directly without triggering load loops.
+ *
+ * @param config The configuration object to write.
+ * @returns {Promise<void>} A promise that resolves when the file is written.
  */
 async function writeConfigToFile(config: DialogConfig): Promise<void> {
     const configPath = await getConfigPath();
@@ -66,7 +73,11 @@ async function writeConfigToFile(config: DialogConfig): Promise<void> {
 }
 
 /**
- * Load configuration from .dialog.json
+ * Loads the configuration from the .dialog.json file.
+ * Returns cached configuration if available. If the file is missing or invalid,
+ * it returns default configuration and attempts to persist it.
+ *
+ * @returns {Promise<DialogConfig>} The loaded configuration.
  */
 export async function loadConfig(): Promise<DialogConfig> {
     if (configCache) {
@@ -96,7 +107,11 @@ export async function loadConfig(): Promise<DialogConfig> {
 }
 
 /**
- * Save configuration to .dialog.json
+ * Saves the configuration to the .dialog.json file.
+ * Updates the cache and writes to disk.
+ *
+ * @param config Partial configuration updates to apply.
+ * @returns {Promise<void>} A promise that resolves when the config is saved.
  */
 export async function saveConfig(config: Partial<DialogConfig>): Promise<void> {
     // Ensure we have the current config loaded
@@ -110,7 +125,10 @@ export async function saveConfig(config: Partial<DialogConfig>): Promise<void> {
 }
 
 /**
- * Get a specific config value
+ * Retrieves a specific configuration value.
+ *
+ * @param key The configuration key to retrieve.
+ * @returns {Promise<DialogConfig[K]>} The value associated with the key.
  */
 export async function getConfigValue<K extends keyof DialogConfig>(
     key: K
@@ -120,7 +138,11 @@ export async function getConfigValue<K extends keyof DialogConfig>(
 }
 
 /**
- * Set a specific config value
+ * Sets a specific configuration value.
+ *
+ * @param key The configuration key to update.
+ * @param value The new value for the key.
+ * @returns {Promise<void>} A promise that resolves when the value is updated.
  */
 export async function setConfigValue<K extends keyof DialogConfig>(
     key: K,
@@ -130,7 +152,9 @@ export async function setConfigValue<K extends keyof DialogConfig>(
 }
 
 /**
- * Get the storage directory path (.dialog folder in execution directory)
+ * Gets the storage directory path (.dialog folder in execution directory).
+ *
+ * @returns {Promise<string>} The absolute path to the storage directory.
  */
 export async function getStorageDir(): Promise<string> {
     return getStorageDirPath();

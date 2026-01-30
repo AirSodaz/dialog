@@ -3,6 +3,11 @@ import 'fake-indexeddb/auto';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { db, getAllDocuments, type Document } from './db';
 
+/**
+ * Benchmark tests for database operations.
+ * Simulates high-volume data to measure performance of query operations.
+ */
+
 // Mock Tauri invoke to avoid IPC calls
 vi.mock('@tauri-apps/api/core', () => ({
     invoke: vi.fn().mockResolvedValue(null),

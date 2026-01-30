@@ -9,6 +9,10 @@ import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
 import { getConfigValue } from "./utils/config";
 
+/**
+ * Main Application Component.
+ * Orchestrates the overall layout, state initialization, and view switching.
+ */
 function App() {
   const { currentView, loadFromWorkspace } = useAppStore(useShallow((state) => ({
     currentView: state.currentView,
@@ -37,6 +41,10 @@ function App() {
     loadFromWorkspace();
   }, [loadFromWorkspace]);
 
+  /**
+   * Renders the appropriate component based on the current view state.
+   * @returns {JSX.Element} The component to display in the main content area.
+   */
   const renderView = () => {
     switch (currentView) {
       case 'all-notes':

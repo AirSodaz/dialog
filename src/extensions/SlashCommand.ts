@@ -3,7 +3,26 @@ import Suggestion, { SuggestionProps, SuggestionKeyDownProps } from '@tiptap/sug
 import { ReactRenderer } from '@tiptap/react';
 import tippy, { Instance, Props } from 'tippy.js';
 import CommandList from '../components/CommandList';
+import {
+    Heading1,
+    Heading2,
+    Heading3,
+    List,
+    ListOrdered,
+    CheckSquare,
+    TextQuote,
+    Code,
+    Minus,
+    Mic,
+    Table as TableIcon,
+    Image as ImageIcon,
+    Sparkles,
+} from 'lucide-react';
 
+/**
+ * Tiptap extension for slash commands.
+ * Provides a popup menu with suggestions when the user types '/'.
+ */
 export const SlashCommand = Extension.create({
     name: 'slashCommand',
 
@@ -33,22 +52,10 @@ interface CommandProps {
     range: Range;
 }
 
-import {
-    Heading1,
-    Heading2,
-    Heading3,
-    List,
-    ListOrdered,
-    CheckSquare,
-    TextQuote,
-    Code,
-    Minus,
-    Mic,
-    Table as TableIcon,
-    Image as ImageIcon,
-    Sparkles,
-} from 'lucide-react';
-
+/**
+ * List of available slash commands.
+ * Each item includes the title, description, icon, and the command function to execute.
+ */
 const SUGGESTION_ITEMS = [
     {
         title: 'Heading 1',
@@ -215,6 +222,13 @@ const SUGGESTION_ITEMS = [
     },
 ];
 
+/**
+ * Filters the available commands based on the user's query.
+ *
+ * @param options The filter options.
+ * @param options.query The search query string.
+ * @returns {Array} The filtered list of suggestion items.
+ */
 export const getSuggestionItems = ({ query }: { query: string }) => {
     return SUGGESTION_ITEMS.filter((item) => {
         if (typeof query === 'string' && query.length > 0) {
@@ -229,6 +243,11 @@ export const getSuggestionItems = ({ query }: { query: string }) => {
     });
 };
 
+/**
+ * Creates the renderer configuration for the suggestion list (Tippy.js + React).
+ *
+ * @returns {object} The suggestion renderer configuration.
+ */
 export const renderSuggestionItems = () => {
     let component: ReactRenderer;
     let popup: Instance<Props>[];

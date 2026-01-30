@@ -32,6 +32,10 @@ import { AINode } from '../extensions/AINode';
 
 const lowlight = createLowlight(common);
 
+/**
+ * Main text editor component based on Tiptap.
+ * Handles document loading, saving (to both DB and filesystem), and editing interactions.
+ */
 const Editor = () => {
     const { currentDocId, setCurrentDoc, updateNote } = useAppStore(useShallow((state) => ({
         currentDocId: state.currentDocId,
@@ -44,7 +48,13 @@ const Editor = () => {
     const lastTitleRef = useRef<string>("");
 
 
-    // Helper to extract title from content
+    /**
+     * Extracts the title from the document content.
+     * Uses the text of the first heading, or defaults to 'Untitled'.
+     *
+     * @param content The Tiptap JSON content.
+     * @returns {string} The extracted title.
+     */
     const extractTitle = (content: any): string => {
         if (!content?.content) return 'Untitled';
 

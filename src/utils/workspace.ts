@@ -1,40 +1,40 @@
 import { invoke } from '@tauri-apps/api/core';
 
 /**
- * Workspace configuration - stores current UI state
- * Similar to Obsidian's workspace.json
+ * Workspace configuration interface.
+ * Stores current UI state, similar to Obsidian's workspace.json.
  */
 export interface WorkspaceConfig {
-    // Currently active document
+    /** Currently active document ID. */
     activeDocId: string | null;
 
-    // Sidebar state
+    /** Sidebar state configuration. */
     sidebar: {
         collapsed: boolean;
         width: number;
     };
 
-    // Recently opened documents (for quick access)
+    /** List of recently opened document IDs for quick access. */
     recentDocs: string[];
 
-    // All notes metadata
+    /** Metadata for all notes in the workspace. */
     notes: {
         id: string;
         title: string;
         updatedAt: number;
     }[];
 
-    // Favorited document IDs
+    /** List of favorited document IDs. */
     favorites: string[];
 
-    // Trashed documents metadata
+    /** Metadata for trashed documents. */
     trash: {
         id: string;
         title: string;
         deletedAt: number;
     }[];
 
-    // Window state (optional, for restoring window position/size)
+    /** Optional window state for restoring position and size. */
     window?: {
         width: number;
         height: number;
@@ -67,6 +67,12 @@ let cachedStorageDir: string | null = null;
 let cachedConfigPath: string | null = null;
 let cachedAssetsDir: string | null = null;
 
+/**
+ * Ensures path configuration is initialized.
+ * Detects the current working directory and sets up cached paths.
+ *
+ * @returns {Promise<void>} A promise that resolves when paths are configured.
+ */
 async function ensurePathConfig(): Promise<void> {
     if (cachedCwd) return;
 
@@ -94,7 +100,9 @@ async function ensurePathConfig(): Promise<void> {
 
 
 /**
- * Get the path to the workspace file
+ * Gets the path to the workspace file.
+ *
+ * @returns {Promise<string>} The absolute path to workspace.json.
  */
 export async function getWorkspacePath(): Promise<string> {
     if (!cachedWorkspacePath) {
@@ -104,7 +112,10 @@ export async function getWorkspacePath(): Promise<string> {
 }
 
 /**
- * Get the path to a content file
+ * Gets the path to a content file for a given document.
+ *
+ * @param docId The ID of the document.
+ * @returns {Promise<string>} The absolute path to the document's JSON file.
  */
 export async function getContentPath(docId: string): Promise<string> {
     if (!cachedContentDir) {
@@ -114,7 +125,9 @@ export async function getContentPath(docId: string): Promise<string> {
 }
 
 /**
- * Get the storage directory path (.dialog folder)
+ * Gets the storage directory path (.dialog folder).
+ *
+ * @returns {Promise<string>} The absolute path to the storage directory.
  */
 export async function getStorageDirPath(): Promise<string> {
     if (!cachedStorageDir) {
@@ -124,7 +137,9 @@ export async function getStorageDirPath(): Promise<string> {
 }
 
 /**
- * Get the path to the app config file (.dialog.json)
+ * Gets the path to the app configuration file (.dialog.json).
+ *
+ * @returns {Promise<string>} The absolute path to the app config file.
  */
 export async function getAppConfigPath(): Promise<string> {
     if (!cachedConfigPath) {
@@ -134,7 +149,9 @@ export async function getAppConfigPath(): Promise<string> {
 }
 
 /**
- * Get the path to the assets directory
+ * Gets the path to the assets directory.
+ *
+ * @returns {Promise<string>} The absolute path to the assets directory.
  */
 export async function getAssetsDirPath(): Promise<string> {
     if (!cachedAssetsDir) {
@@ -144,7 +161,10 @@ export async function getAssetsDirPath(): Promise<string> {
 }
 
 /**
- * Get the full path for a specific asset file
+ * Gets the full path for a specific asset file.
+ *
+ * @param filename The name of the asset file.
+ * @returns {Promise<string>} The absolute path to the asset file.
  */
 export async function getAssetPath(filename: string): Promise<string> {
     if (!cachedAssetsDir) {
@@ -154,7 +174,10 @@ export async function getAssetPath(filename: string): Promise<string> {
 }
 
 /**
- * Load workspace configuration
+ * Loads the workspace configuration.
+ * Returns cached configuration if available, otherwise reads from disk.
+ *
+ * @returns {Promise<WorkspaceConfig>} The loaded workspace configuration.
  */
 export async function loadWorkspace(): Promise<WorkspaceConfig> {
     if (workspaceCache) {
@@ -176,7 +199,11 @@ export async function loadWorkspace(): Promise<WorkspaceConfig> {
 }
 
 /**
- * Save workspace configuration
+ * Saves the workspace configuration.
+ * Updates the cache and writes to disk.
+ *
+ * @param workspace Partial configuration to update.
+ * @returns {Promise<void>} A promise that resolves when save is complete.
  */
 export async function saveWorkspace(workspace: Partial<WorkspaceConfig>): Promise<void> {
     const currentWorkspace = workspaceCache || await loadWorkspace();
@@ -191,7 +218,11 @@ export async function saveWorkspace(workspace: Partial<WorkspaceConfig>): Promis
 }
 
 /**
- * Update a specific workspace value
+ * Updates a specific workspace value by key.
+ *
+ * @param key The configuration key to update.
+ * @param value The new value for the key.
+ * @returns {Promise<void>} A promise that resolves when update is complete.
  */
 export async function updateWorkspace<K extends keyof WorkspaceConfig>(
     key: K,
@@ -201,7 +232,11 @@ export async function updateWorkspace<K extends keyof WorkspaceConfig>(
 }
 
 /**
- * Add a document to recent docs list
+ * Adds a document to the recent documents list.
+ * Maintains a maximum size of 10 recent documents.
+ *
+ * @param docId The ID of the document to add.
+ * @returns {Promise<void>} A promise that resolves when the list is updated.
  */
 export async function addRecentDoc(docId: string): Promise<void> {
     const workspace = await loadWorkspace();
@@ -217,7 +252,11 @@ export async function addRecentDoc(docId: string): Promise<void> {
 }
 
 /**
- * Set the active document
+ * Sets the active document ID.
+ * Also adds the document to the recent documents list.
+ *
+ * @param docId The ID of the document to activate, or null to clear.
+ * @returns {Promise<void>} A promise that resolves when the state is updated.
  */
 export async function setActiveDoc(docId: string | null): Promise<void> {
     await saveWorkspace({ activeDocId: docId });
@@ -227,7 +266,10 @@ export async function setActiveDoc(docId: string | null): Promise<void> {
 }
 
 /**
- * Update sidebar state
+ * Updates the sidebar state.
+ *
+ * @param sidebar Partial sidebar configuration to update.
+ * @returns {Promise<void>} A promise that resolves when the state is updated.
  */
 export async function updateSidebarState(sidebar: Partial<WorkspaceConfig['sidebar']>): Promise<void> {
     const workspace = await loadWorkspace();
@@ -237,7 +279,8 @@ export async function updateSidebarState(sidebar: Partial<WorkspaceConfig['sideb
 }
 
 /**
- * Clear workspace cache (useful for testing or resetting)
+ * Clears the workspace cache.
+ * Useful for testing or resetting state.
  */
 export function clearWorkspaceCache(): void {
     workspaceCache = null;
@@ -249,6 +292,15 @@ export function clearWorkspaceCache(): void {
 
 // --- Note Management Helpers ---
 
+/**
+ * Adds or updates a note in the workspace metadata.
+ *
+ * @param note The note metadata object.
+ * @param note.id The ID of the note.
+ * @param note.title The title of the note.
+ * @param note.updatedAt The timestamp of the last update.
+ * @returns {Promise<void>} A promise that resolves when the workspace is updated.
+ */
 export async function addNoteToWorkspace(note: { id: string, title: string, updatedAt: number }): Promise<void> {
     const workspace = await loadWorkspace();
     // Check if exists, update if so
@@ -267,6 +319,13 @@ export async function addNoteToWorkspace(note: { id: string, title: string, upda
     await saveWorkspace({ notes: newNotes });
 }
 
+/**
+ * Updates an existing note's metadata in the workspace.
+ *
+ * @param id The ID of the note to update.
+ * @param updates Partial metadata to apply.
+ * @returns {Promise<void>} A promise that resolves when the workspace is updated.
+ */
 export async function updateNoteInWorkspace(id: string, updates: Partial<{ title: string, updatedAt: number }>): Promise<void> {
     const workspace = await loadWorkspace();
     const existingIndex = workspace.notes.findIndex(n => n.id === id);
@@ -280,6 +339,12 @@ export async function updateNoteInWorkspace(id: string, updates: Partial<{ title
     }
 }
 
+/**
+ * Removes a note from the workspace metadata.
+ *
+ * @param id The ID of the note to remove.
+ * @returns {Promise<void>} A promise that resolves when the workspace is updated.
+ */
 export async function removeNoteFromWorkspace(id: string): Promise<void> {
     const workspace = await loadWorkspace();
     const newNotes = workspace.notes.filter(n => n.id !== id);
@@ -288,6 +353,12 @@ export async function removeNoteFromWorkspace(id: string): Promise<void> {
 
 // --- Favorite Management Helpers ---
 
+/**
+ * Toggles the favorite status of a document in the workspace.
+ *
+ * @param id The ID of the document to toggle.
+ * @returns {Promise<void>} A promise that resolves when the workspace is updated.
+ */
 export async function toggleFavoriteInWorkspace(id: string): Promise<void> {
     const workspace = await loadWorkspace();
     const isFavorite = workspace.favorites.includes(id);
@@ -304,6 +375,16 @@ export async function toggleFavoriteInWorkspace(id: string): Promise<void> {
 
 // --- Trash Management Helpers ---
 
+/**
+ * Moves a note to the trash metadata in the workspace.
+ * Removes the note from the main notes list and favorites list.
+ *
+ * @param note The trash item metadata.
+ * @param note.id The ID of the note.
+ * @param note.title The title of the note.
+ * @param note.deletedAt The timestamp when the note was deleted.
+ * @returns {Promise<void>} A promise that resolves when the workspace is updated.
+ */
 export async function addTrashToWorkspace(note: { id: string, title: string, deletedAt: number }): Promise<void> {
     const workspace = await loadWorkspace();
 
@@ -323,6 +404,12 @@ export async function addTrashToWorkspace(note: { id: string, title: string, del
     });
 }
 
+/**
+ * Restores a note from the trash metadata in the workspace.
+ *
+ * @param id The ID of the note to restore.
+ * @returns {Promise<void>} A promise that resolves when the workspace is updated.
+ */
 export async function restoreFromTrashInWorkspace(id: string): Promise<void> {
     const workspace = await loadWorkspace();
     const trashItem = workspace.trash.find(t => t.id === id);
@@ -342,6 +429,12 @@ export async function restoreFromTrashInWorkspace(id: string): Promise<void> {
     await saveWorkspace({ trash: newTrash });
 }
 
+/**
+ * Permanently removes a note from the trash metadata in the workspace.
+ *
+ * @param id The ID of the note to delete.
+ * @returns {Promise<void>} A promise that resolves when the workspace is updated.
+ */
 export async function permanentlyDeleteFromWorkspace(id: string): Promise<void> {
     const workspace = await loadWorkspace();
     const newTrash = workspace.trash.filter(t => t.id !== id);
