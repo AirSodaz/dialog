@@ -13,3 +13,7 @@
 ## 2025-10-27 - [Combobox Pattern for Search]
 **Learning:** For custom search modals, the standard `input` + `list` structure is opaque to screen readers; implementing the full ARIA Combobox pattern (`role="combobox"`, `aria-activedescendant`, `role="listbox"`) makes the "type to filter" interaction accessible without changing visual behavior.
 **Action:** Always implement `role="combobox"` on search inputs that filter a list, ensuring selection state is mirrored via `aria-activedescendant`.
+
+## 2026-01-30 - [Semantic Command Menus]
+**Learning:** Custom "slash command" menus implemented as `div` soup are invisible to screen readers; adding `role="listbox"` to the container and `role="option"` to items transforms them into navigable widgets, even if full focus management is complex.
+**Action:** Always apply `role="listbox"` and `role="option"` to custom popup menus, and ensure `aria-selected` mirrors the visual selection state.
