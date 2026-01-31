@@ -167,7 +167,7 @@ export default function Sidebar() {
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 space-y-0.5 overflow-y-auto">
+                <nav className="flex-1 space-y-0.5 overflow-y-auto" aria-label="Main Navigation">
                     <SidebarItem
                         icon={Search}
                         label="Search"
@@ -195,8 +195,8 @@ export default function Sidebar() {
 
                     {/* Recent Pages */}
                     {recentPages.length > 0 && (
-                        <div className="pt-4 pb-2">
-                            <div className="px-3 text-xs font-semibold text-subtle uppercase tracking-wider mb-1">
+                        <div className="pt-4 pb-2" role="region" aria-label="Recent Notes">
+                            <div className="px-3 text-xs font-semibold text-subtle uppercase tracking-wider mb-1" aria-hidden="true">
                                 Recent
                             </div>
                             {recentPages.map((doc) => (
@@ -246,6 +246,7 @@ const SidebarItem = memo(({ icon: Icon, label, shortcut, active, onClick }: Side
         <button
             type="button"
             onClick={onClick}
+            aria-current={active ? 'page' : undefined}
             className={cn(
                 "w-full text-left flex items-center justify-between px-3 py-1.5 rounded-md cursor-pointer text-muted group transition-colors",
                 active

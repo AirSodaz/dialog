@@ -98,4 +98,14 @@ describe('Sidebar', () => {
         // We need to wait for the async action.
         // But let's keep it simple for now, verifying render is enough for "no regression" check.
     });
+
+    it('sets aria-current on active item', () => {
+        render(<Sidebar />);
+
+        const doc1Btn = screen.getByText('Note 1').closest('button');
+        expect(doc1Btn?.getAttribute('aria-current')).toBe('page');
+
+        const allNotesBtn = screen.getByText('All Notes').closest('button');
+        expect(allNotesBtn?.hasAttribute('aria-current')).toBe(false);
+    });
 });

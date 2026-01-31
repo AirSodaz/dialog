@@ -276,6 +276,7 @@ const Editor = () => {
                     <button
                         onClick={() => editor.chain().focus().toggleBold().run()}
                         aria-label="Toggle bold"
+                        aria-pressed={editor.isActive('bold')}
                         title="Toggle bold"
                         className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${editor.isActive('bold')
                             ? 'bg-surface-hover text-ink'
@@ -287,6 +288,7 @@ const Editor = () => {
                     <button
                         onClick={() => editor.chain().focus().toggleItalic().run()}
                         aria-label="Toggle italic"
+                        aria-pressed={editor.isActive('italic')}
                         title="Toggle italic"
                         className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${editor.isActive('italic')
                             ? 'bg-surface-hover text-ink'
