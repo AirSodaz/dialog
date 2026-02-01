@@ -17,3 +17,7 @@
 ## 2026-01-30 - [Semantic Command Menus]
 **Learning:** Custom "slash command" menus implemented as `div` soup are invisible to screen readers; adding `role="listbox"` to the container and `role="option"` to items transforms them into navigable widgets, even if full focus management is complex.
 **Action:** Always apply `role="listbox"` and `role="option"` to custom popup menus, and ensure `aria-selected` mirrors the visual selection state.
+
+## 2026-02-01 - [Accessible Hover Actions]
+**Learning:** Action buttons (like delete/edit) that only appear on hover via `opacity-0` are invisible to keyboard users. Using `group-focus-within:opacity-100` alongside `group-hover:opacity-100` ensures these actions become visible when the parent container or the actions themselves receive focus.
+**Action:** Always pair `group-hover` visibility classes with `group-focus-within` for interactive list items containing hidden actions.
