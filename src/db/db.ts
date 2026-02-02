@@ -286,16 +286,3 @@ export const permanentlyDelete = async (id: string) => {
     await removeNoteFromWorkspace(id); // Safety ensure it's gone from notes if it was somehow there
 };
 
-/**
- * Searches for documents matching the query string in their title.
- * Only searches non-deleted documents.
- *
- * @param query The search query string.
- * @returns {Promise<Document[]>} A list of matching documents.
- */
-export const searchDocuments = async (query: string) => {
-    const lowerQuery = query.toLowerCase();
-    return await db.documents
-        .filter(doc => !doc.isDeleted && doc.title.toLowerCase().includes(lowerQuery))
-        .toArray();
-};
