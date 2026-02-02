@@ -3,6 +3,8 @@ import { Play, Pause, Mic, Square } from 'lucide-react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { getAssetPath } from '../utils/workspace';
 
+const WAVEFORM_BARS = Array.from({ length: 32 });
+
 /**
  * Tiptap NodeView for displaying and recording audio clips.
  * Supports recording from microphone and playback of local files.
@@ -271,13 +273,11 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
 
                             {/* Recording wave animation */}
                             <div className="flex items-center gap-0.5 h-8" style={{ minWidth: '160px' }}>
-                                {Array.from({ length: 32 }).map((_, i) => (
+                                {WAVEFORM_BARS.map((_, i) => (
                                     <div
                                         key={i}
-                                        className="w-1 rounded-full bg-red-400"
+                                        className="w-1 rounded-full bg-red-400 animate-recording-wave"
                                         style={{
-                                            height: `${30 + Math.sin(Date.now() / 200 + i * 0.5) * 30}%`,
-                                            animation: 'pulse 0.5s ease-in-out infinite',
                                             animationDelay: `${i * 30}ms`
                                         }}
                                     />
@@ -308,7 +308,7 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
                             ) : (
                                 /* Placeholder waveform */
                                 <div className="flex items-center gap-0.5 h-8" style={{ minWidth: '160px' }}>
-                                    {Array.from({ length: 32 }).map((_, i) => (
+                                    {WAVEFORM_BARS.map((_, i) => (
                                         <div
                                             key={i}
                                             className="w-1 rounded-full bg-stone-300 dark:bg-stone-600"
