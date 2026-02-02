@@ -58,6 +58,9 @@ class DialogDB extends Dexie {
                 if (doc.isFavorite === undefined) doc.isFavorite = false;
             });
         });
+        this.version(6).stores({
+            documents: 'id, updatedAt, isFavorite, isDeleted, [isDeleted+updatedAt], [isFavorite+isDeleted+updatedAt], [isDeleted+deletedAt]'
+        });
     }
 }
 
@@ -192,9 +195,10 @@ export const getFavorites = async () => {
  */
 export const getTrash = async () => {
     return await db.documents
-        .filter(doc => doc.isDeleted === true)
+        .where('[isDeleted+deletedAt]')
+        .between([true, Dexie.minKey], [true, Dexie.maxKey])
         .reverse()
-        .sortBy('deletedAt');
+        .toArray();
 };
 
 /**
