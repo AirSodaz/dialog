@@ -57,6 +57,8 @@ const DEFAULT_WORKSPACE: WorkspaceConfig = {
 };
 
 let workspaceCache: WorkspaceConfig | null = null;
+let lastSavedWorkspaceStr: string | null = null;
+let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 
 // Cache for path resolution to avoid redundant IPC calls
 let cachedCwd: string | null = null;
@@ -187,6 +189,7 @@ export async function loadWorkspace(): Promise<WorkspaceConfig> {
     try {
         const workspacePath = await getWorkspacePath();
         const content = await invoke<string>('read_json', { path: workspacePath });
+        lastSavedWorkspaceStr = content;
         const parsed = JSON.parse(content);
         workspaceCache = { ...DEFAULT_WORKSPACE, ...parsed };
         return workspaceCache!;
@@ -194,6 +197,7 @@ export async function loadWorkspace(): Promise<WorkspaceConfig> {
         // Workspace file doesn't exist yet, return defaults
         console.log('[Workspace] Workspace not found, using defaults...');
         workspaceCache = { ...DEFAULT_WORKSPACE };
+        lastSavedWorkspaceStr = JSON.stringify(workspaceCache, null, 2);
         return workspaceCache;
     }
 }
@@ -210,11 +214,27 @@ export async function saveWorkspace(workspace: Partial<WorkspaceConfig>): Promis
     const newWorkspace = { ...currentWorkspace, ...workspace };
     workspaceCache = newWorkspace;
 
-    const workspacePath = await getWorkspacePath();
-    await invoke('write_json', {
-        path: workspacePath,
-        content: JSON.stringify(newWorkspace, null, 2)
-    });
+    if (saveTimeout) {
+        clearTimeout(saveTimeout);
+    }
+
+    saveTimeout = setTimeout(async () => {
+        const workspacePath = await getWorkspacePath();
+        const content = JSON.stringify(workspaceCache, null, 2);
+
+        if (content !== lastSavedWorkspaceStr) {
+            try {
+                await invoke('write_json', {
+                    path: workspacePath,
+                    content
+                });
+                lastSavedWorkspaceStr = content;
+            } catch (error) {
+                console.error('[Workspace] Failed to save workspace:', error);
+            }
+        }
+        saveTimeout = null;
+    }, 1000);
 }
 
 /**
@@ -284,6 +304,11 @@ export async function updateSidebarState(sidebar: Partial<WorkspaceConfig['sideb
  */
 export function clearWorkspaceCache(): void {
     workspaceCache = null;
+    lastSavedWorkspaceStr = null;
+    if (saveTimeout) {
+        clearTimeout(saveTimeout);
+        saveTimeout = null;
+    }
     // Clear path caches as well
     cachedCwd = null;
     cachedWorkspacePath = null;
