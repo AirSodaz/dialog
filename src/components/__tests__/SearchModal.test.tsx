@@ -3,16 +3,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent, waitFor } from '@testing-library/react';
 import SearchModal from '../SearchModal';
 import { useAppStore } from '../../store/appStore';
-import * as db from '../../db/db';
 
 // Mock dependencies
 vi.mock('../../store/appStore', () => ({
     useAppStore: vi.fn(),
-}));
-
-vi.mock('../../db/db', () => ({
-    getAllDocuments: vi.fn(),
-    searchDocuments: vi.fn(),
 }));
 
 // Mock useShallow
@@ -36,6 +30,7 @@ describe('SearchModal', () => {
         closeSearch: vi.fn(),
         openDocument: vi.fn(),
         toggleSearch: vi.fn(),
+        notes: mockDocs,
     };
 
     beforeEach(() => {
@@ -43,8 +38,6 @@ describe('SearchModal', () => {
         (useAppStore as any).mockImplementation((selector: any) => {
             return selector(mockStore);
         });
-        (db.getAllDocuments as any).mockResolvedValue(mockDocs);
-        (db.searchDocuments as any).mockResolvedValue(mockDocs);
     });
 
     it('renders when searchOpen is true', async () => {

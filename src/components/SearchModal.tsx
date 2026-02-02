@@ -1,5 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { Document, searchDocuments, getAllDocuments } from '../db/db';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useAppStore } from '../store/appStore';
 import { useShallow } from 'zustand/react/shallow';
 import { Search, FileText, X } from 'lucide-react';
@@ -10,41 +9,35 @@ import { cn } from '../lib/utils';
  * Provides a global search interface with keyboard navigation.
  */
 export default function SearchModal() {
-    const { searchOpen, closeSearch, openDocument } = useAppStore(useShallow((state) => ({
+    const { searchOpen, closeSearch, openDocument, notes } = useAppStore(useShallow((state) => ({
         searchOpen: state.searchOpen,
         closeSearch: state.closeSearch,
         openDocument: state.openDocument,
+        notes: state.notes,
     })));
     const [query, setQuery] = useState('');
-    const [results, setResults] = useState<Document[]>([]);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Load all documents on open, then filter as user types
+    const results = useMemo(() => {
+        const lowerQuery = query.toLowerCase().trim();
+        if (!lowerQuery) return notes;
+        return notes.filter(doc => doc.title.toLowerCase().includes(lowerQuery));
+    }, [query, notes]);
+
+    // Reset state on open
     useEffect(() => {
         if (searchOpen) {
             setQuery('');
             setSelectedIndex(0);
-            // Load all documents initially
-            getAllDocuments().then(setResults);
             // Focus input after a small delay for animation
             setTimeout(() => inputRef.current?.focus(), 50);
         }
     }, [searchOpen]);
 
-    // Search as user types
+    // Reset selection when query changes
     useEffect(() => {
-        const search = async () => {
-            if (query.trim()) {
-                const docs = await searchDocuments(query);
-                setResults(docs);
-            } else {
-                const docs = await getAllDocuments();
-                setResults(docs);
-            }
-            setSelectedIndex(0);
-        };
-        search();
+        setSelectedIndex(0);
     }, [query]);
 
     // Global keyboard shortcut
