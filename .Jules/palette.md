@@ -21,3 +21,7 @@
 ## 2026-02-01 - [Accessible Hover Actions]
 **Learning:** Action buttons (like delete/edit) that only appear on hover via `opacity-0` are invisible to keyboard users. Using `group-focus-within:opacity-100` alongside `group-hover:opacity-100` ensures these actions become visible when the parent container or the actions themselves receive focus.
 **Action:** Always pair `group-hover` visibility classes with `group-focus-within` for interactive list items containing hidden actions.
+
+## 2026-02-02 - [Inline Errors vs Alerts]
+**Learning:** Browser `alert()` calls disrupt user flow and offer poor accessibility. Inline error messages with `role="alert"` provide immediate, non-blocking feedback that is announced by screen readers.
+**Action:** Replace `alert()` error handling with inline state-driven UI components wrapped in `role="alert"`.

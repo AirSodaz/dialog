@@ -1,5 +1,5 @@
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react';
-import { Sparkles, ArrowUp } from 'lucide-react';
+import { Sparkles, ArrowUp, Loader2, AlertCircle } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { getConfigValue } from '../utils/config';
 
@@ -10,6 +10,7 @@ import { getConfigValue } from '../utils/config';
 export const AIBlock = ({ node, deleteNode, editor }: NodeViewProps) => {
     const [prompt, setPrompt] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Auto-focus input on mount
@@ -22,8 +23,6 @@ export const AIBlock = ({ node, deleteNode, editor }: NodeViewProps) => {
         if (node.attrs.autoTrigger && node.attrs.initialPrompt) {
             setPrompt(node.attrs.initialPrompt);
             // Trigger submit immediately
-            // We need to call handleSubmit, but it expects an event or we extract logic.
-            // Let's create a dedicated function for the API call.
             triggerAI(node.attrs.initialPrompt);
         }
     }, []);
@@ -31,6 +30,7 @@ export const AIBlock = ({ node, deleteNode, editor }: NodeViewProps) => {
     const triggerAI = async (text: string) => {
         if (!text.trim() || isLoading) return;
         setIsLoading(true);
+        setError(null);
 
         try {
             const aiConfig = await getConfigValue('ai');
@@ -40,7 +40,7 @@ export const AIBlock = ({ node, deleteNode, editor }: NodeViewProps) => {
             const model = aiConfig?.model || 'gpt-4o';
 
             if (!apiKey && provider !== 'custom') {
-                alert('API Key is missing in Settings.');
+                setError('API Key is missing in Settings.');
                 setIsLoading(false);
                 return;
             }
@@ -76,7 +76,7 @@ export const AIBlock = ({ node, deleteNode, editor }: NodeViewProps) => {
             }
 
         } catch (error: any) {
-            alert(`Error: ${error.message}`);
+            setError(error.message || 'Failed to generate content');
             setIsLoading(false);
         }
     };
@@ -94,43 +94,55 @@ export const AIBlock = ({ node, deleteNode, editor }: NodeViewProps) => {
 
     return (
         <NodeViewWrapper className="my-2">
-            <div className="flex items-center gap-3 p-1 rounded-lg bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 shadow-sm w-full max-w-2xl mx-auto">
-                <div
-                    className="flex items-center justify-center w-8 h-8 rounded-md bg-stone-100 dark:bg-stone-800 text-stone-500 shrink-0 ml-1"
-                    role="status"
-                    aria-label={isLoading ? "Generating content" : "AI Assistant"}
-                >
-                    {isLoading ? (
-                        <span className="animate-spin text-xs" aria-hidden="true">⟳</span>
-                    ) : (
-                        <Sparkles className="w-4 h-4" aria-hidden="true" />
-                    )}
+            <div className="w-full max-w-2xl mx-auto rounded-lg bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 shadow-sm overflow-hidden transition-all">
+                <div className="flex items-center gap-3 p-1">
+                    <div
+                        className="flex items-center justify-center w-8 h-8 rounded-md bg-stone-100 dark:bg-stone-800 text-stone-500 shrink-0 ml-1"
+                        role="status"
+                        aria-label={isLoading ? "Generating content" : "AI Assistant"}
+                    >
+                        {isLoading ? (
+                            <Loader2 className="w-4 h-4 animate-spin text-stone-500 dark:text-stone-400" />
+                        ) : (
+                            <Sparkles className="w-4 h-4" aria-hidden="true" />
+                        )}
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="flex-1 flex items-center gap-2">
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={prompt}
+                            onChange={e => setPrompt(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            disabled={isLoading}
+                            placeholder={isLoading ? "Generating..." : "Ask AI to write something..."}
+                            aria-label="AI prompt"
+                            className="flex-1 bg-transparent border-none focus:outline-none text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 h-9"
+                        />
+                        {!isLoading && (
+                            <button
+                                type="submit"
+                                disabled={!prompt.trim()}
+                                aria-label="Submit prompt"
+                                title="Submit prompt"
+                                className="p-1.5 rounded-md bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity mr-1"
+                            >
+                                <ArrowUp className="w-4 h-4" />
+                            </button>
+                        )}
+                    </form>
                 </div>
 
-                <form onSubmit={handleSubmit} className="flex-1 flex items-center gap-2">
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        value={prompt}
-                        onChange={e => setPrompt(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        disabled={isLoading}
-                        placeholder={isLoading ? "Generating..." : "Ask AI to write something..."}
-                        aria-label="AI prompt"
-                        className="flex-1 bg-transparent border-none focus:outline-none text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 h-9"
-                    />
-                    {!isLoading && (
-                        <button
-                            type="submit"
-                            disabled={!prompt.trim()}
-                            aria-label="Submit prompt"
-                            title="Submit prompt"
-                            className="p-1.5 rounded-md bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity mr-1"
-                        >
-                            <ArrowUp className="w-4 h-4" />
-                        </button>
-                    )}
-                </form>
+                {error && (
+                    <div
+                        className="px-3 py-2 bg-red-50 dark:bg-red-900/20 border-t border-red-100 dark:border-red-900/30 flex items-center gap-2 text-xs text-red-600 dark:text-red-400"
+                        role="alert"
+                    >
+                        <AlertCircle className="w-3 h-3 shrink-0" />
+                        <span>{error}</span>
+                    </div>
+                )}
             </div>
         </NodeViewWrapper>
     );
