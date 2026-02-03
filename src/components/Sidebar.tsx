@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, FocusEvent, useCallback, memo } from "react";
+import { type JSONContent } from "@tiptap/react";
 import { cn } from "../lib/utils";
 import {
     FileText,
@@ -19,7 +20,7 @@ import { loadDocument } from "../db/db";
  * @param content The Tiptap JSON content.
  * @returns {boolean} True if the content is empty, false otherwise.
  */
-const isContentEmpty = (content: any): boolean => {
+function isContentEmpty(content: JSONContent | null | undefined): boolean {
     if (!content) return true;
     if (!content.content || content.content.length === 0) return true;
     // Check if it's just an empty paragraph
@@ -30,7 +31,7 @@ const isContentEmpty = (content: any): boolean => {
         }
     }
     return false;
-};
+}
 
 /**
  * Sidebar component.
@@ -227,7 +228,7 @@ export default function Sidebar() {
 
 interface SidebarItemProps {
     /** Icon component to display. */
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
     /** Text label for the item. */
     label: string;
     /** Optional keyboard shortcut hint. */
@@ -241,7 +242,7 @@ interface SidebarItemProps {
 /**
  * Reusable sidebar navigation item.
  */
-const SidebarItem = memo(({ icon: Icon, label, shortcut, active, onClick }: SidebarItemProps) => {
+function SidebarItemImpl({ icon: Icon, label, shortcut, active, onClick }: SidebarItemProps) {
     return (
         <button
             type="button"
@@ -268,7 +269,8 @@ const SidebarItem = memo(({ icon: Icon, label, shortcut, active, onClick }: Side
             )}
         </button>
     )
-});
+}
+const SidebarItem = memo(SidebarItemImpl);
 
 interface RecentPageItemProps {
     id: string;
@@ -280,7 +282,7 @@ interface RecentPageItemProps {
 /**
  * Item representing a recently opened page in the sidebar.
  */
-const RecentPageItem = memo(({ id, title, active, onOpen }: RecentPageItemProps) => {
+function RecentPageItemImpl({ id, title, active, onOpen }: RecentPageItemProps) {
     const handleClick = useCallback(() => onOpen(id), [onOpen, id]);
 
     return (
@@ -291,4 +293,5 @@ const RecentPageItem = memo(({ id, title, active, onOpen }: RecentPageItemProps)
             onClick={handleClick}
         />
     );
-});
+}
+const RecentPageItem = memo(RecentPageItemImpl);
