@@ -170,4 +170,34 @@ describe('SettingsModal', () => {
         expect(screen.getByLabelText('API Key').tagName).toBe('INPUT');
         expect(screen.getByLabelText('Model Name').tagName).toBe('INPUT');
     });
+
+    it('toggles API key visibility', async () => {
+        render(<SettingsModal />);
+
+        // Switch to AI tab
+        const aiTab = screen.getByRole('button', { name: /AI Services/i });
+        fireEvent.click(aiTab);
+
+        // Find API Key input and toggle button
+        const apiKeyInput = screen.getByLabelText('API Key');
+        const toggleBtn = screen.getByRole('button', { name: /Show API key/i });
+
+        // Initial state: password type
+        expect(apiKeyInput.getAttribute('type')).toBe('password');
+        expect(toggleBtn).toBeDefined();
+
+        // Click toggle
+        fireEvent.click(toggleBtn);
+
+        // Should be text type now
+        expect(apiKeyInput.getAttribute('type')).toBe('text');
+        expect(screen.getByRole('button', { name: /Hide API key/i })).toBeDefined();
+
+        // Click toggle again
+        fireEvent.click(toggleBtn);
+
+        // Should be password type again
+        expect(apiKeyInput.getAttribute('type')).toBe('password');
+        expect(screen.getByRole('button', { name: /Show API key/i })).toBeDefined();
+    });
 });

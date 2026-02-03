@@ -1,6 +1,6 @@
 import { useAppStore } from '../store/appStore';
 import { useShallow } from 'zustand/react/shallow';
-import { X, Moon, Sun, Folder, Sparkles, Settings as SettingsIcon, Key, Server, Hash } from 'lucide-react';
+import { X, Moon, Sun, Folder, Sparkles, Settings as SettingsIcon, Key, Server, Hash, Eye, EyeOff } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getConfigValue, setConfigValue, getStorageDir, DialogConfig } from '../utils/config';
 import clsx from 'clsx';
@@ -37,6 +37,7 @@ export default function SettingsModal() {
         apiKey: '',
         model: ''
     });
+    const [showApiKey, setShowApiKey] = useState(false);
 
     useEffect(() => {
         // Load settings on open
@@ -276,14 +277,29 @@ export default function SettingsModal() {
                                             <Key className="w-3.5 h-3.5" />
                                             API Key
                                         </label>
-                                        <input
-                                            id="ai-api-key"
-                                            type="password"
-                                            value={aiConfig.apiKey}
-                                            onChange={(e) => updateAiConfig('apiKey', e.target.value)}
-                                            className="w-full px-3 py-2 rounded-lg bg-surface border border-border-base text-ink placeholder-subtle focus:outline-none focus:ring-2 focus:ring-border-focus font-mono text-sm"
-                                            placeholder="sk-..."
-                                        />
+                                        <div className="relative">
+                                            <input
+                                                id="ai-api-key"
+                                                type={showApiKey ? "text" : "password"}
+                                                value={aiConfig.apiKey}
+                                                onChange={(e) => updateAiConfig('apiKey', e.target.value)}
+                                                className="w-full pl-3 pr-10 py-2 rounded-lg bg-surface border border-border-base text-ink placeholder-subtle focus:outline-none focus:ring-2 focus:ring-border-focus font-mono text-sm"
+                                                placeholder="sk-..."
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowApiKey(!showApiKey)}
+                                                aria-label={showApiKey ? "Hide API key" : "Show API key"}
+                                                title={showApiKey ? "Hide API key" : "Show API key"}
+                                                className="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-muted hover:text-ink transition-colors cursor-pointer"
+                                            >
+                                                {showApiKey ? (
+                                                    <EyeOff className="w-4 h-4" />
+                                                ) : (
+                                                    <Eye className="w-4 h-4" />
+                                                )}
+                                            </button>
+                                        </div>
                                         <p className="mt-1.5 text-xs text-muted">
                                             Your key is stored locally in <code>.dialog/config.json</code>.
                                         </p>
