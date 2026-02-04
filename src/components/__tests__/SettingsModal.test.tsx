@@ -152,7 +152,7 @@ describe('SettingsModal', () => {
         render(<SettingsModal />);
 
         // Switch to AI tab
-        const aiTab = screen.getByRole('button', { name: /AI Services/i });
+        const aiTab = screen.getByRole('tab', { name: /AI Services/i });
         expect(aiTab).toBeDefined();
         fireEvent.click(aiTab);
 
@@ -175,7 +175,7 @@ describe('SettingsModal', () => {
         render(<SettingsModal />);
 
         // Switch to AI tab
-        const aiTab = screen.getByRole('button', { name: /AI Services/i });
+        const aiTab = screen.getByRole('tab', { name: /AI Services/i });
         fireEvent.click(aiTab);
 
         // Find API Key input and toggle button
@@ -199,5 +199,52 @@ describe('SettingsModal', () => {
         // Should be password type again
         expect(apiKeyInput.getAttribute('type')).toBe('password');
         expect(screen.getByRole('button', { name: /Show API key/i })).toBeDefined();
+    });
+
+    it('implements accessible tabs pattern', async () => {
+        render(<SettingsModal />);
+
+        // Dialog Role
+        expect(screen.getByRole('dialog')).toBeDefined();
+        expect(screen.getByRole('dialog').getAttribute('aria-modal')).toBe('true');
+        expect(screen.getByRole('dialog').getAttribute('aria-labelledby')).toBe('settings-title');
+
+        // Tablist
+        const tablist = screen.getByRole('tablist');
+        expect(tablist).toBeDefined();
+        expect(tablist.getAttribute('aria-orientation')).toBe('vertical');
+
+        // Tabs
+        const generalTab = screen.getByRole('tab', { name: /General/i });
+        const aiTab = screen.getByRole('tab', { name: /AI Services/i });
+
+        expect(generalTab).toBeDefined();
+        expect(aiTab).toBeDefined();
+
+        // Initial state: General selected
+        expect(generalTab.getAttribute('aria-selected')).toBe('true');
+        expect(aiTab.getAttribute('aria-selected')).toBe('false');
+
+        // Tabpanels
+        const generalPanel = screen.getByRole('tabpanel');
+        expect(generalPanel).toBeDefined();
+        expect(generalPanel.getAttribute('id')).toBe('panel-general');
+        expect(generalPanel.getAttribute('aria-labelledby')).toBe('tab-general');
+
+        // Verify relationships
+        expect(generalTab.getAttribute('aria-controls')).toBe('panel-general');
+        expect(aiTab.getAttribute('aria-controls')).toBe('panel-ai');
+
+        // Switch Tab
+        fireEvent.click(aiTab);
+
+        // State update
+        expect(generalTab.getAttribute('aria-selected')).toBe('false');
+        expect(aiTab.getAttribute('aria-selected')).toBe('true');
+
+        // Panel update
+        const aiPanel = screen.getByRole('tabpanel');
+        expect(aiPanel.getAttribute('id')).toBe('panel-ai');
+        expect(aiPanel.getAttribute('aria-labelledby')).toBe('tab-ai');
     });
 });
