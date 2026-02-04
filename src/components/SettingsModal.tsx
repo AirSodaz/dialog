@@ -124,18 +124,25 @@ export default function SettingsModal() {
             onClick={closeSettings}
         >
             <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="settings-title"
                 className="w-full max-w-2xl h-[500px] bg-modal rounded-xl shadow-2xl border border-border-base overflow-hidden flex"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Sidebar */}
                 <div className="w-48 bg-surface/50 border-r border-border-base flex flex-col">
                     <div className="p-4 border-b border-border-base">
-                        <h2 className="text-sm font-semibold text-subtle uppercase tracking-wider">
+                        <h2 id="settings-title" className="text-sm font-semibold text-subtle uppercase tracking-wider">
                             Settings
                         </h2>
                     </div>
-                    <nav className="flex-1 p-2 space-y-1">
+                    <nav className="flex-1 p-2 space-y-1" role="tablist" aria-orientation="vertical">
                         <button
+                            role="tab"
+                            id="tab-general"
+                            aria-selected={activeTab === 'general'}
+                            aria-controls="panel-general"
                             onClick={() => setActiveTab('general')}
                             className={clsx(
                                 "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
@@ -148,6 +155,10 @@ export default function SettingsModal() {
                             General
                         </button>
                         <button
+                            role="tab"
+                            id="tab-ai"
+                            aria-selected={activeTab === 'ai'}
+                            aria-controls="panel-ai"
                             onClick={() => setActiveTab('ai')}
                             className={clsx(
                                 "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
@@ -181,7 +192,12 @@ export default function SettingsModal() {
                     {/* Scrollable Content */}
                     <div className="flex-1 overflow-y-auto p-6">
                         {activeTab === 'general' && (
-                            <div className="space-y-6">
+                            <div
+                                role="tabpanel"
+                                id="panel-general"
+                                aria-labelledby="tab-general"
+                                className="space-y-6"
+                            >
                                 {/* Theme Toggle */}
                                 <div className="flex items-center justify-between">
                                     <div>
@@ -231,7 +247,12 @@ export default function SettingsModal() {
                         )}
 
                         {activeTab === 'ai' && (
-                            <div className="space-y-6">
+                            <div
+                                role="tabpanel"
+                                id="panel-ai"
+                                aria-labelledby="tab-ai"
+                                className="space-y-6"
+                            >
                                 {/* Provider Selector */}
                                 <div>
                                     <label htmlFor="ai-provider" className="block text-sm font-medium text-muted mb-2">

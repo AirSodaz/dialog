@@ -25,3 +25,7 @@
 ## 2026-02-02 - [Inline Errors vs Alerts]
 **Learning:** Browser `alert()` calls disrupt user flow and offer poor accessibility. Inline error messages with `role="alert"` provide immediate, non-blocking feedback that is announced by screen readers.
 **Action:** Replace `alert()` error handling with inline state-driven UI components wrapped in `role="alert"`.
+
+## 2026-02-03 - [Semantic Settings Navigation]
+**Learning:** Settings modals with sidebar navigation are often misinterpreted as lists of buttons by screen readers; structurally implementing them as vertical tabs (`role="tablist"`, `role="tab"`, `role="tabpanel"`) clarifies the relationship between the control and the content panel.
+**Action:** Use ARIA Tab pattern for internal modal navigation where a list of options controls a content panel.
