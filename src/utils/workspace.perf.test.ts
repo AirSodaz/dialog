@@ -17,7 +17,7 @@ describe('Workspace Performance Benchmark', () => {
     clearWorkspaceCache();
     vi.useFakeTimers();
     // Default mock implementations
-    invokeMock.mockImplementation((cmd, args) => {
+    invokeMock.mockImplementation((cmd, _args) => {
       if (cmd === 'get_cwd') return Promise.resolve('/usr/home/user');
       if (cmd === 'read_json') {
           return Promise.resolve(JSON.stringify({

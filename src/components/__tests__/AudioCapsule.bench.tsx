@@ -1,7 +1,6 @@
 import { bench, describe, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { AudioCapsule } from '../AudioCapsule';
-import React from 'react';
 
 // Mock mocks for AudioCapsule dependencies
 vi.mock('@tauri-apps/api/core', () => ({
@@ -86,16 +85,22 @@ describe('AudioCapsule Render Performance', () => {
     // `bench` functions can be async.
 
     bench('Render AudioCapsule (Default/Placeholder)', () => {
+        const props: any = {
+            node: mockNode,
+            updateAttributes: mockUpdateAttributes,
+            deleteNode: () => {},
+            getPos: () => 0,
+            editor: {},
+            selected: false,
+            extension: {},
+            decorations: [],
+            innerDecorations: [],
+            view: {},
+            HTMLAttributes: {}
+        };
+
         render(
-            <AudioCapsule
-                node={mockNode as any}
-                updateAttributes={mockUpdateAttributes}
-                deleteNode={() => {}}
-                getPos={() => 0}
-                editor={{} as any}
-                selected={false}
-                extension={{} as any}
-            />
+            <AudioCapsule {...props} />
         );
     });
 });
