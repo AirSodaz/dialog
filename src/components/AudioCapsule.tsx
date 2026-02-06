@@ -2,6 +2,7 @@ import { NodeViewWrapper, NodeViewProps } from '@tiptap/react';
 import { Play, Pause, Mic, Square } from 'lucide-react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { getAssetPath } from '../utils/workspace';
+import { cn } from '../lib/utils';
 
 const WAVEFORM_BARS = Array.from({ length: 32 });
 
@@ -260,17 +261,20 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
         return (
             <NodeViewWrapper className="my-4" contentEditable={false} data-drag-handle>
                 <div className="inline-flex items-center gap-3 p-3 pr-5 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 shadow-sm">
+                    {/* Record/Stop Button */}
+                    <button
+                        onClick={isRecording ? stopRecording : startRecording}
+                        className={cn(
+                            "shrink-0 w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors",
+                            isRecording && "animate-pulse"
+                        )}
+                        aria-label={isRecording ? "Stop recording" : "Start recording"}
+                    >
+                        {isRecording ? <Square className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                    </button>
+
                     {isRecording ? (
                         <>
-                            {/* Recording indicator */}
-                            <button
-                                onClick={stopRecording}
-                                className="shrink-0 w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors animate-pulse"
-                                aria-label="Stop recording"
-                            >
-                                <Square className="w-4 h-4" />
-                            </button>
-
                             {/* Recording wave animation */}
                             <div className="flex items-center gap-0.5 h-8" style={{ minWidth: '160px' }}>
                                 {WAVEFORM_BARS.map((_, i) => (
@@ -291,15 +295,6 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
                         </>
                     ) : (
                         <>
-                            {/* Start recording button */}
-                            <button
-                                onClick={startRecording}
-                                className="shrink-0 w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
-                                aria-label="Start recording"
-                            >
-                                <Mic className="w-4 h-4" />
-                            </button>
-
                             {micError ? (
                                 /* Error message */
                                 <div className="flex items-center gap-2" role="alert">
