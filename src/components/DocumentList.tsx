@@ -53,26 +53,20 @@ const DocumentListItem = React.memo(({
     onRestore,
     onPermanentDelete
 }: DocItemProps) => {
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onOpen(id);
-        }
-    };
-
     return (
         <div
-            role="button"
-            tabIndex={0}
-            onClick={() => onOpen(id)}
-            onKeyDown={handleKeyDown}
             className={cn(
-                "group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all outline-none focus-visible:ring-2 focus-visible:ring-stone-400 dark:focus-visible:ring-stone-600",
+                "group flex items-center justify-between p-3 rounded-lg transition-all relative",
                 "hover:bg-surface-hover",
                 isSelected && "bg-surface-hover"
             )}
         >
-            <div className="flex items-center gap-3 min-w-0">
+            <button
+                onClick={() => onOpen(id)}
+                aria-label={`Open ${title || 'Untitled'}`}
+                className="absolute inset-0 w-full h-full rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-stone-400 dark:focus-visible:ring-stone-600 text-left"
+            />
+            <div className="flex items-center gap-3 min-w-0 relative z-10 pointer-events-none">
                 <FileText className="w-5 h-5 text-subtle shrink-0" />
                 <div className="min-w-0">
                     <div className="text-sm font-medium text-ink truncate">
@@ -84,7 +78,7 @@ const DocumentListItem = React.memo(({
                 </div>
             </div>
 
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity relative z-20">
                 {viewType === 'trash' ? (
                     <>
                         <button
