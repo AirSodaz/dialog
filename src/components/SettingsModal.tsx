@@ -145,7 +145,7 @@ export default function SettingsModal() {
                             aria-controls="panel-general"
                             onClick={() => setActiveTab('general')}
                             className={clsx(
-                                "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                                "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:outline-none",
                                 activeTab === 'general'
                                     ? "bg-modal text-ink shadow-sm border border-border-base"
                                     : "text-muted hover:bg-surface-hover"
@@ -161,7 +161,7 @@ export default function SettingsModal() {
                             aria-controls="panel-ai"
                             onClick={() => setActiveTab('ai')}
                             className={clsx(
-                                "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                                "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:outline-none",
                                 activeTab === 'ai'
                                     ? "bg-modal text-ink shadow-sm border border-border-base"
                                     : "text-muted hover:bg-surface-hover"
@@ -183,7 +183,7 @@ export default function SettingsModal() {
                         <button
                             onClick={closeSettings}
                             aria-label="Close settings"
-                            className="p-1.5 rounded-lg hover:bg-surface-hover text-muted transition-colors"
+                            className="p-1.5 rounded-lg hover:bg-surface-hover text-muted transition-colors focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:outline-none"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -211,7 +211,8 @@ export default function SettingsModal() {
                                     <button
                                         data-testid="theme-toggle"
                                         onClick={toggleTheme}
-                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface text-ink hover:bg-surface-hover transition-colors"
+                                        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface text-ink hover:bg-surface-hover transition-colors focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:outline-none"
                                     >
                                         {isDark ? (
                                             <>
@@ -312,7 +313,7 @@ export default function SettingsModal() {
                                                 onClick={() => setShowApiKey(!showApiKey)}
                                                 aria-label={showApiKey ? "Hide API key" : "Show API key"}
                                                 title={showApiKey ? "Hide API key" : "Show API key"}
-                                                className="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-muted hover:text-ink transition-colors cursor-pointer"
+                                                className="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-muted hover:text-ink transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:outline-none rounded-r-lg"
                                             >
                                                 {showApiKey ? (
                                                     <EyeOff className="w-4 h-4" />
