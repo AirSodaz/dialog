@@ -160,7 +160,7 @@ export default function Sidebar() {
                 <div className="mb-4 px-2">
                     <button
                         onClick={handleNewPage}
-                        className="w-full flex items-center gap-2 px-2 py-1.5 bg-paper hover:bg-surface-hover border border-border-base shadow-sm rounded-md text-muted transition-all group"
+                        className="w-full flex items-center gap-2 px-2 py-1.5 bg-paper hover:bg-surface-hover border border-border-base shadow-sm rounded-md text-muted transition-all group focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:outline-none"
                     >
                         <Plus className="w-4 h-4 text-subtle group-hover:text-muted" />
                         <span className="text-sm font-medium">New Page</span>
@@ -249,7 +249,7 @@ function SidebarItemImpl({ icon: Icon, label, shortcut, active, onClick }: Sideb
             onClick={onClick}
             aria-current={active ? 'page' : undefined}
             className={cn(
-                "w-full text-left flex items-center justify-between px-3 py-1.5 rounded-md cursor-pointer text-muted group transition-colors",
+                "w-full text-left flex items-center justify-between px-3 py-1.5 rounded-md cursor-pointer text-muted group transition-colors focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:outline-none",
                 active
                     ? "bg-surface-hover text-ink"
                     : "hover:bg-surface-hover"
