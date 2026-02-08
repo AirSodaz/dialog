@@ -29,3 +29,7 @@
 ## 2026-02-03 - [Semantic Settings Navigation]
 **Learning:** Settings modals with sidebar navigation are often misinterpreted as lists of buttons by screen readers; structurally implementing them as vertical tabs (`role="tablist"`, `role="tab"`, `role="tabpanel"`) clarifies the relationship between the control and the content panel.
 **Action:** Use ARIA Tab pattern for internal modal navigation where a list of options controls a content panel.
+
+## 2026-02-09 - [Transparent Overlay Buttons]
+**Learning:** Using `opacity-0` for interactive overlays can obscure focus rings and potentially hide elements from assistive technologies depending on implementation. Using `bg-transparent` (with `outline-none` and managed focus styles) ensures the element remains interactive, accessible, and supports visible focus indicators.
+**Action:** Prefer `bg-transparent` over `opacity-0` for clickable overlay buttons, ensuring `focus-visible` styles are explicitly defined.
