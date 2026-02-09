@@ -15,7 +15,7 @@ export const SyncStatus = ({ status, className }: SyncStatusProps) => {
             role="status"
             aria-live="polite"
             className={twMerge(
-                'text-xs text-stone-400 font-medium transition-opacity duration-300 select-none',
+                'text-xs text-stone-500 font-medium transition-opacity duration-300 select-none',
                 status === 'saving' && 'animate-pulse',
                 status === 'synced' ? 'opacity-0' : 'opacity-100',
                 className

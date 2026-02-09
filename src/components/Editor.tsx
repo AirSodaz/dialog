@@ -26,7 +26,7 @@ import { SyncStatus } from './SyncStatus';
 import { NodeSelection } from '@tiptap/pm/state';
 import { useAppStore } from '../store/appStore';
 import { useShallow } from 'zustand/react/shallow';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Bold, Italic } from 'lucide-react';
 
 import { AINode } from '../extensions/AINode';
 
@@ -283,7 +283,7 @@ const Editor = () => {
                             : 'text-muted hover:bg-surface-hover'
                             }`}
                     >
-                        <span className="font-bold text-sm">B</span>
+                        <Bold className="w-4 h-4" aria-hidden="true" />
                     </button>
                     <button
                         onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -295,7 +295,7 @@ const Editor = () => {
                             : 'text-muted hover:bg-surface-hover'
                             }`}
                     >
-                        <span className="italic text-sm">I</span>
+                        <Italic className="w-4 h-4" aria-hidden="true" />
                     </button>
                     <div className="w-px h-4 bg-border-base my-auto mx-1" />
                     <button
