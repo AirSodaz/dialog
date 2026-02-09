@@ -61,6 +61,10 @@ class DialogDB extends Dexie {
         this.version(6).stores({
             documents: 'id, updatedAt, isFavorite, isDeleted, [isDeleted+updatedAt], [isFavorite+isDeleted+updatedAt], [isDeleted+deletedAt]'
         });
+        // Version 7: Add covering indices to include title, id, and other metadata fields to avoid fetching full object.
+        this.version(7).stores({
+            documents: 'id, updatedAt, isFavorite, isDeleted, [isDeleted+updatedAt+title+id+isFavorite], [isFavorite+isDeleted+updatedAt+title+id], [isDeleted+deletedAt+title+id+updatedAt+isFavorite]'
+        });
     }
 }
 
@@ -162,43 +166,95 @@ export const loadDocument = async (id: string) => {
 /**
  * Retrieves all active (non-deleted) documents.
  * Results are sorted by `updatedAt` in descending order.
+ * Optimized to only fetch metadata (skips content) using covering index.
  *
- * @returns {Promise<Document[]>} A list of active documents.
+ * @returns {Promise<Document[]>} A list of active documents (content is undefined).
  */
-export const getAllDocuments = async () => {
-    return await db.documents
-        .where('[isDeleted+updatedAt]')
-        .between([false, Dexie.minKey], [false, Dexie.maxKey])
+export const getAllDocuments = async (): Promise<Document[]> => {
+    const keys = await db.documents
+        .where('[isDeleted+updatedAt+title+id+isFavorite]')
+        .between(
+            [false, Dexie.minKey, Dexie.minKey, Dexie.minKey, Dexie.minKey],
+            [false, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]
+        )
         .reverse()
-        .toArray();
+        .keys();
+
+    return keys.map(key => {
+        // key is [isDeleted, updatedAt, title, id, isFavorite]
+        const k = key as unknown as [boolean, number, string, string, boolean];
+        return {
+            isDeleted: k[0],
+            updatedAt: k[1],
+            title: k[2],
+            id: k[3],
+            isFavorite: k[4],
+            content: undefined,
+        } as Document;
+    });
 };
 
 /**
  * Retrieves all favorite documents.
  * Results are sorted by `updatedAt` in descending order.
+ * Optimized to only fetch metadata using covering index.
  *
- * @returns {Promise<Document[]>} A list of favorite documents.
+ * @returns {Promise<Document[]>} A list of favorite documents (content is undefined).
  */
-export const getFavorites = async () => {
-    return await db.documents
-        .where('[isFavorite+isDeleted+updatedAt]')
-        .between([true, false, Dexie.minKey], [true, false, Dexie.maxKey])
+export const getFavorites = async (): Promise<Document[]> => {
+    const keys = await db.documents
+        .where('[isFavorite+isDeleted+updatedAt+title+id]')
+        .between(
+            [true, false, Dexie.minKey, Dexie.minKey, Dexie.minKey],
+            [true, false, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]
+        )
         .reverse()
-        .toArray();
+        .keys();
+
+    return keys.map(key => {
+        // key is [isFavorite, isDeleted, updatedAt, title, id]
+        const k = key as unknown as [boolean, boolean, number, string, string];
+        return {
+            isFavorite: k[0],
+            isDeleted: k[1],
+            updatedAt: k[2],
+            title: k[3],
+            id: k[4],
+            content: undefined
+        } as Document;
+    });
 };
 
 /**
  * Retrieves all trashed (soft-deleted) documents.
  * Results are sorted by `deletedAt` in descending order.
+ * Optimized to only fetch metadata using covering index.
  *
- * @returns {Promise<Document[]>} A list of trashed documents.
+ * @returns {Promise<Document[]>} A list of trashed documents (content is undefined).
  */
-export const getTrash = async () => {
-    return await db.documents
-        .where('[isDeleted+deletedAt]')
-        .between([true, Dexie.minKey], [true, Dexie.maxKey])
+export const getTrash = async (): Promise<Document[]> => {
+    const keys = await db.documents
+        .where('[isDeleted+deletedAt+title+id+updatedAt+isFavorite]')
+        .between(
+            [true, Dexie.minKey, Dexie.minKey, Dexie.minKey, Dexie.minKey, Dexie.minKey],
+            [true, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]
+        )
         .reverse()
-        .toArray();
+        .keys();
+
+    return keys.map(key => {
+        // key is [isDeleted, deletedAt, title, id, updatedAt, isFavorite]
+        const k = key as unknown as [boolean, number, string, string, number, boolean];
+        return {
+            isDeleted: k[0],
+            deletedAt: k[1],
+            title: k[2],
+            id: k[3],
+            updatedAt: k[4],
+            isFavorite: k[5],
+            content: undefined,
+        } as Document;
+    });
 };
 
 /**
@@ -289,4 +345,3 @@ export const permanentlyDelete = async (id: string) => {
     await permanentlyDeleteFromWorkspace(id);
     await removeNoteFromWorkspace(id); // Safety ensure it's gone from notes if it was somehow there
 };
-
