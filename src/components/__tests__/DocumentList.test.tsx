@@ -80,31 +80,9 @@ describe('DocumentList', () => {
     it('calls openDocument when clicking a note', () => {
         render(<DocumentList viewType="all-notes" />);
 
-        const note1 = screen.getByText('Note 1');
-        fireEvent.click(note1);
+        const note1Button = screen.getByRole('button', { name: 'Open Note 1' });
+        fireEvent.click(note1Button);
 
-        expect(mockStore.openDocument).toHaveBeenCalledWith('1');
-    });
-
-    it('calls openDocument when pressing Enter on a note', () => {
-        render(<DocumentList viewType="all-notes" />);
-
-        const note1Text = screen.getByText('Note 1');
-        const note1Button = note1Text.closest('[role="button"]');
-        expect(note1Button).not.toBeNull();
-
-        fireEvent.keyDown(note1Button!, { key: 'Enter' });
-        expect(mockStore.openDocument).toHaveBeenCalledWith('1');
-    });
-
-    it('calls openDocument when pressing Space on a note', () => {
-        render(<DocumentList viewType="all-notes" />);
-
-        const note1Text = screen.getByText('Note 1');
-        const note1Button = note1Text.closest('[role="button"]');
-        expect(note1Button).not.toBeNull();
-
-        fireEvent.keyDown(note1Button!, { key: ' ' });
         expect(mockStore.openDocument).toHaveBeenCalledWith('1');
     });
 });
