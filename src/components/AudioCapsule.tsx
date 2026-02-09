@@ -140,10 +140,9 @@ export const AudioCapsule = ({ node, updateAttributes }: NodeViewProps) => {
                     return;
                 }
 
-                // Convert blob to number array for Rust
+                // Use Uint8Array directly for efficient transfer to Rust
                 const arrayBuffer = await blob.arrayBuffer();
-                const uint8Array = new Uint8Array(arrayBuffer);
-                const content = Array.from(uint8Array);
+                const content = new Uint8Array(arrayBuffer);
                 console.log('[AudioCapsule] Content length (bytes):', content.length);
 
                 // Generate filename
