@@ -1,6 +1,7 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use std::path::{Path, PathBuf, Component};
 use std::fs;
+use std::sync::OnceLock;
 
 /// Ensures that the provided path is safe to access within the current working directory.
 ///
@@ -19,9 +20,15 @@ use std::fs;
 /// * `Ok(PathBuf)` - The validated absolute path.
 /// * `Err(String)` - An error message if the path is invalid or unsafe.
 fn ensure_safe_path(path_str: &str) -> Result<PathBuf, String> {
-    // 1. Get current working directory
-    let cwd = std::env::current_dir().map_err(|e| e.to_string())?;
-    let cwd = fs::canonicalize(&cwd).map_err(|e| e.to_string())?;
+    static CWD_CACHE: OnceLock<Result<PathBuf, String>> = OnceLock::new();
+
+    // 1. Get current working directory (cached)
+    let cwd_res = CWD_CACHE.get_or_init(|| {
+        let cwd = std::env::current_dir().map_err(|e| e.to_string())?;
+        fs::canonicalize(&cwd).map_err(|e| e.to_string())
+    });
+
+    let cwd = cwd_res.as_ref().map_err(|e| e.clone())?;
 
     // 2. Resolve target path
     let path = Path::new(path_str);
